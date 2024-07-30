@@ -14,9 +14,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
+# Импортируем необходимые модули и функции
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.contrib.auth import views as auth_views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include('Accounting_button.urls')),  # Подключаем urls из Accounting_button
+    #path('Accounting_button/', include('Accounting_button.urls')),
 ]
