@@ -1,0 +1,14 @@
+<!-- templates/Accounting_button/functions_of_performers/function_detail.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ function.name }}</h1>
+<p>{{ function.description }}</p>
+
+{% if perms.Accounting_button.change_functions_of_performers %}
+    <a href="{% url 'Accounting_button:update_function' function.id %}" class="btn btn-primary">Edit</a>
+{% endif %}
+{% if perms.Accounting_button.delete_functions_of_performers %}
+    <a href="{% url 'Accounting_button:delete_function' function.id %}" class="btn btn-danger">Delete</a>
+{% endif %}
+{% endblock %}

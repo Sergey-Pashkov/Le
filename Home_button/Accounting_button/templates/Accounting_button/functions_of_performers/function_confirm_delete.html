@@ -1,0 +1,11 @@
+<!-- templates/Accounting_button/functions_of_performers/function_confirm_delete.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Are you sure you want to delete "{{ function.name }}"?</h1>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Yes, delete</button>
+    <a href="{% url 'Accounting_button:read_function' function.id %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

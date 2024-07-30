@@ -1,0 +1,13 @@
+<!-- templates/Accounting_button/functions_of_performers/functions_list.html -->
+{% extends "Accounting_button/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Функции исполнителей (должности)</h2>
+    <ul>
+        {% for function in functions %}
+            <li>{{ function.name }}: {{ function.description }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

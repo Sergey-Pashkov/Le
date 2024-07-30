@@ -4,5 +4,7 @@
     <h2>Дашборд Организатора</h2>
     <p>Добро пожаловать, {{ user.username }}!</p>
     <!-- Добавьте здесь содержимое дашборда -->
+    
+    <a href="{% url 'Accounting_button:functions_list' %}" class="btn btn-primary">Функции исполнителей</a>
 </div>
 {% endblock %}
