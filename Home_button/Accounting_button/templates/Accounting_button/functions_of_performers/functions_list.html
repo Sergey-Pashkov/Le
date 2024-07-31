@@ -3,30 +3,36 @@
 {% load permissions %}
 
 {% block content %}
-<div class="container">
-    <h2>Функции исполнителей (должности)</h2>
-    
-    <p>Добро пожаловать, {{ user.username }}!</p>  <!-- Приветствие пользователя -->
-    
-    <ul>
-        {% for function in functions %}
-            <li>
-                {{ function.name }}: {{ function.description }}
-                
-                {% if function.id %}
-                    {% if user|has_perm:"Accounting_button.change_functions_of_performers" %}
-                        <a href="{% url 'Accounting_button:update_function' function.id %}" class="btn btn-primary">Редактировать функцию</a>
-                    {% endif %}
-                    {% if user|has_perm:"Accounting_button.delete_functions_of_performers" %}
-                        <a href="{% url 'Accounting_button:delete_function' function.id %}" class="btn btn-danger">Удалить функцию</a>
-                    {% endif %}
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-    
-    {% if user|has_group:"Собственник" %}
-        <a href="{% url 'Accounting_button:create_function' %}" class="btn btn-primary">Добавить новую функцию</a>
-    {% endif %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Функции исполнителей (должности)</h2>
+            <p class="lead">Добро пожаловать, {{ user.username }}!</p> <!-- Приветствие пользователя -->
+
+            <div class="list-group">
+                {% for function in functions %}
+                    <div class="list-group-item mb-2">
+                        <h5 class="mb-1">{{ function.name }}</h5>
+                        <p class="mb-1">{{ function.description }}</p>
+
+                        {% if function.id %}
+                            <div class="btn-group" role="group" aria-label="Function Actions">
+                                {% if user|has_perm:"Accounting_button.change_functions_of_performers" %}
+                                    <a href="{% url 'Accounting_button:update_function' function.id %}" class="btn btn-primary btn-sm">Редактировать функцию</a>
+                                {% endif %}
+                                {% if user|has_perm:"Accounting_button.delete_functions_of_performers" %}
+                                    <a href="{% url 'Accounting_button:delete_function' function.id %}" class="btn btn-danger btn-sm">Удалить функцию</a>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% if user|has_group:"Собственник" %}
+                <a href="{% url 'Accounting_button:create_function' %}" class="btn btn-success mt-4">Добавить новую функцию</a>
+            {% endif %}
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -31,7 +31,7 @@ class CustomLogoutView(LogoutView):
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from .models import Functions_of_performers
-from .forms import FunctionsOfPerformersForm  # Предполагается, что у вас есть форма
+from .forms import FunctionsOfPerformersForm
 
 @login_required
 @permission_required('Accounting_button.add_functions_of_performers', raise_exception=True)
@@ -41,12 +41,14 @@ def create_function(request):
     Доступно только авторизованным пользователям с правом добавления функций исполнителей.
     """
     if request.method == 'POST':
-        form = FunctionsOfPerformersForm(request.POST)  # Создаем форму с данными из запроса
+        form = FunctionsOfPerformersForm(request.POST)
         if form.is_valid():
-            form.save()  # Сохраняем новую функцию в базу данных
-            return redirect('Accounting_button:functions_list')  # Перенаправляем на список функций
+            function = form.save(commit=False)
+            function.owner = request.user  # Устанавливаем текущего пользователя как владельца
+            function.save()
+            return redirect('Accounting_button:functions_list')
     else:
-        form = FunctionsOfPerformersForm()  # Пустая форма для GET-запроса
+        form = FunctionsOfPerformersForm()
     return render(request, 'Accounting_button/functions_of_performers/function_form.html', {'form': form})
 
 @login_required
@@ -56,7 +58,7 @@ def read_function(request, function_id):
     Представление для отображения деталей функции исполнителя.
     Доступно только авторизованным пользователям с правом просмотра функций исполнителей.
     """
-    function = get_object_or_404(Functions_of_performers, id=function_id)  # Получаем функцию или возвращаем 404
+    function = get_object_or_404(Functions_of_performers, id=function_id)
     return render(request, 'Accounting_button/functions_of_performers/function_detail.html', {'function': function})
 
 @login_required
@@ -66,14 +68,14 @@ def update_function(request, function_id):
     Представление для обновления существующей функции исполнителя.
     Доступно только авторизованным пользователям с правом изменения функций исполнителей.
     """
-    function = get_object_or_404(Functions_of_performers, id=function_id)  # Получаем функцию или возвращаем 404
+    function = get_object_or_404(Functions_of_performers, id=function_id)
     if request.method == 'POST':
-        form = FunctionsOfPerformersForm(request.POST, instance=function)  # Создаем форму с данными из запроса и экземпляром функции
+        form = FunctionsOfPerformersForm(request.POST, instance=function)
         if form.is_valid():
-            form.save()  # Сохраняем изменения в базу данных
-            return redirect('Accounting_button:functions_list')  # Перенаправляем на список функций
+            form.save()
+            return redirect('Accounting_button:functions_list')
     else:
-        form = FunctionsOfPerformersForm(instance=function)  # Форма с данными функции для GET-запроса
+        form = FunctionsOfPerformersForm(instance=function)
     return render(request, 'Accounting_button/functions_of_performers/function_form.html', {'form': form, 'function': function})
 
 @login_required
@@ -83,10 +85,10 @@ def delete_function(request, function_id):
     Представление для удаления существующей функции исполнителя.
     Доступно только авторизованным пользователям с правом удаления функций исполнителей.
     """
-    function = get_object_or_404(Functions_of_performers, id=function_id)  # Получаем функцию или возвращаем 404
+    function = get_object_or_404(Functions_of_performers, id=function_id)
     if request.method == 'POST':
-        function.delete()  # Удаляем функцию из базы данных
-        return redirect('Accounting_button:functions_list')  # Перенаправляем на список функций
+        function.delete()
+        return redirect('Accounting_button:functions_list')
     return render(request, 'Accounting_button/functions_of_performers/function_confirm_delete.html', {'function': function})
 
 @login_required
@@ -96,8 +98,5 @@ def functions_list(request):
     Представление для отображения списка всех функций исполнителей.
     Доступно только авторизованным пользователям с правом просмотра функций исполнителей.
     """
-    functions = Functions_of_performers.objects.all()  # Получаем все функции из базы данных
+    functions = Functions_of_performers.objects.all()
     return render(request, 'Accounting_button/functions_of_performers/functions_list.html', {'functions': functions})
-
-
-
