@@ -18,10 +18,10 @@
                         {% if rate.id %}
                             <div class="btn-group" role="group" aria-label="Rate Actions">
                                 {% if perms.Accounting_button.change_performersrates %}
-                                    <a href="{% url 'Accounting_button:update_rate' rate.id %}" class="btn btn-primary btn-sm">Редактировать</a>
+                                    <a href="{% url 'Accounting_button:update_rate' rate.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
                                 {% endif %}
                                 {% if perms.Accounting_button.delete_performersrates %}
-                                    <a href="{% url 'Accounting_button:delete_rate' rate.id %}" class="btn btn-danger btn-sm">Удалить</a>
+                                    <a href="{% url 'Accounting_button:delete_rate' rate.id %}" class="btn btn-danger btn-sm mr-2">Удалить</a>
                                 {% endif %}
                             </div>
                         {% endif %}

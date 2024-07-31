@@ -18,10 +18,10 @@
                         {% if function.id %}
                             <div class="btn-group" role="group" aria-label="Function Actions">
                                 {% if user|has_perm:"Accounting_button.change_functions_of_performers" %}
-                                    <a href="{% url 'Accounting_button:update_function' function.id %}" class="btn btn-primary btn-sm">Редактировать</a>
+                                    <a href="{% url 'Accounting_button:update_function' function.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
                                 {% endif %}
                                 {% if user|has_perm:"Accounting_button.delete_functions_of_performers" %}
-                                    <a href="{% url 'Accounting_button:delete_function' function.id %}" class="btn btn-danger btn-sm">Удалить</a>
+                                    <a href="{% url 'Accounting_button:delete_function' function.id %}" class="btn btn-danger btn-sm mr-2">Удалить</a>
                                 {% endif %}
                             </div>
                         {% endif %}
