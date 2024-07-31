@@ -100,3 +100,63 @@ def functions_list(request):
     """
     functions = Functions_of_performers.objects.all()
     return render(request, 'Accounting_button/functions_of_performers/functions_list.html', {'functions': functions})
+
+
+# Accounting_button/views.py
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from .models import PerformersRates
+from .forms import PerformersRatesForm
+
+# Представление для создания нового тарифа
+@login_required
+@permission_required('Accounting_button.add_performersrates', raise_exception=True)
+def create_rate(request):
+    if request.method == 'POST':
+        form = PerformersRatesForm(request.POST)  # Создаем форму с данными из запроса
+        if form.is_valid():
+            rate = form.save(commit=False)
+            rate.owner = request.user  # Устанавливаем текущего пользователя как владельца
+            rate.save()  # Сохраняем тариф
+            return redirect('Accounting_button:rates_list')  # Перенаправляем на список тарифов
+    else:
+        form = PerformersRatesForm()  # Пустая форма для GET-запроса
+    return render(request, 'Accounting_button/performers_rates/rate_form.html', {'form': form})
+
+# Представление для отображения деталей тарифа
+@login_required
+@permission_required('Accounting_button.view_performersrates', raise_exception=True)
+def read_rate(request, rate_id):
+    rate = get_object_or_404(PerformersRates, id=rate_id)  # Получаем тариф или возвращаем 404
+    return render(request, 'Accounting_button/performers_rates/rate_detail.html', {'rate': rate})
+
+# Представление для обновления существующего тарифа
+@login_required
+@permission_required('Accounting_button.change_performersrates', raise_exception=True)
+def update_rate(request, rate_id):
+    rate = get_object_or_404(PerformersRates, id=rate_id)  # Получаем тариф или возвращаем 404
+    if request.method == 'POST':
+        form = PerformersRatesForm(request.POST, instance=rate)  # Создаем форму с данными из запроса и экземпляром тарифа
+        if form.is_valid():
+            form.save()  # Сохраняем изменения
+            return redirect('Accounting_button:rates_list')  # Перенаправляем на список тарифов
+    else:
+        form = PerformersRatesForm(instance=rate)  # Форма с данными тарифа для GET-запроса
+    return render(request, 'Accounting_button/performers_rates/rate_form.html', {'form': form, 'rate': rate})
+
+# Представление для удаления существующего тарифа
+@login_required
+@permission_required('Accounting_button.delete_performersrates', raise_exception=True)
+def delete_rate(request, rate_id):
+    rate = get_object_or_404(PerformersRates, id=rate_id)  # Получаем тариф или возвращаем 404
+    if request.method == 'POST':
+        rate.delete()  # Удаляем тариф
+        return redirect('Accounting_button:rates_list')  # Перенаправляем на список тарифов
+    return render(request, 'Accounting_button/performers_rates/rate_confirm_delete.html', {'rate': rate})
+
+# Представление для отображения списка всех тарифов исполнителей
+@login_required
+@permission_required('Accounting_button.view_performersrates', raise_exception=True)
+def rates_list(request):
+    rates = PerformersRates.objects.all()  # Получаем все тарифы из базы данных
+    return render(request, 'Accounting_button/performers_rates/rates_list.html', {'rates': rates})

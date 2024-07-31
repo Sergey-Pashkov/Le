@@ -17,3 +17,12 @@ class Functions_of_performers(models.Model):
     def __str__(self):
         # Метод __str__ возвращает название функции исполнителя
         return self.name
+
+
+class PerformersRates(models.Model):
+    name = models.CharField(max_length=100)
+    cost_per_minute = models.DecimalField(max_digits=10, decimal_places=2)
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='performers_rates')
+
+    def __str__(self):
+        return self.name

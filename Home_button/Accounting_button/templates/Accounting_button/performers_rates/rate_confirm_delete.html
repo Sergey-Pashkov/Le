@@ -1,0 +1,13 @@
+<!-- templates/Accounting_button/performers_rates/rate_confirm_delete.html -->
+{% extends "Accounting_button/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Вы уверены, что хотите удалить "{{ rate.name }}"?</h1>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Да, удалить</button>
+        <a href="{% url 'Accounting_button:read_rate' rate.id %}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

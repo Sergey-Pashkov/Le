@@ -13,3 +13,7 @@ class FunctionsOfPerformersAdmin(admin.ModelAdmin):
 
 # Альтернативный способ регистрации модели
 # admin.site.register(Functions_of_performers, FunctionsOfPerformersAdmin)
+from django.contrib import admin
+from .models import PerformersRates
+
+admin.site.register(PerformersRates)

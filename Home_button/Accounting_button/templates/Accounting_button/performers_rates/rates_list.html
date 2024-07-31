@@ -1,0 +1,38 @@
+<!-- Accounting_button/templates/Accounting_button/performers_rates/rates_list.html -->
+{% extends "Accounting_button/base.html" %}
+{% load permissions %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Тарифы исполнителей</h2>
+            <p class="lead">Добро пожаловать, {{ user.username }}!</p> <!-- Приветствие пользователя -->
+
+            <div class="list-group">
+                {% for rate in rates %}
+                    <div class="list-group-item mb-2">
+                        <h5 class="mb-1">{{ rate.name }}</h5>
+                        <p class="mb-1">Стоимость за минуту: {{ rate.cost_per_minute }}</p>
+
+                        {% if rate.id %}
+                            <div class="btn-group" role="group" aria-label="Rate Actions">
+                                {% if perms.Accounting_button.change_performersrates %}
+                                    <a href="{% url 'Accounting_button:update_rate' rate.id %}" class="btn btn-primary btn-sm">Редактировать</a>
+                                {% endif %}
+                                {% if perms.Accounting_button.delete_performersrates %}
+                                    <a href="{% url 'Accounting_button:delete_rate' rate.id %}" class="btn btn-danger btn-sm">Удалить</a>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% if perms.Accounting_button.add_performersrates %}
+                <a href="{% url 'Accounting_button:create_rate' %}" class="btn btn-success mt-4">Добавить новый тариф</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

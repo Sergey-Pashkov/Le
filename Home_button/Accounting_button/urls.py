@@ -1,11 +1,10 @@
-# Импортируем необходимые модули и функции
+
+# Accounting_button/urls.py
 from django.urls import path
 from . import views
 
 # Определяем пространство имен для URL
 app_name = 'Accounting_button'
-
-# Accounting_button/urls.py
 
 urlpatterns = [
     path('dashboard/owner/', views.owner_dashboard, name='owner_dashboard'),
@@ -19,4 +18,10 @@ urlpatterns = [
     path('functions/<int:function_id>/', views.read_function, name='read_function'),
     path('functions/<int:function_id>/update/', views.update_function, name='update_function'),
     path('functions/<int:function_id>/delete/', views.delete_function, name='delete_function'),
+
+    path('rates/', views.rates_list, name='rates_list'),  # Путь для списка тарифов
+    path('rates/create/', views.create_rate, name='create_rate'),  # Путь для создания тарифа
+    path('rates/<int:rate_id>/', views.read_rate, name='read_rate'),  # Путь для отображения деталей тарифа
+    path('rates/<int:rate_id>/update/', views.update_rate, name='update_rate'),  # Путь для обновления тарифа
+    path('rates/<int:rate_id>/delete/', views.delete_rate, name='delete_rate'),  # Путь для удаления тарифа
 ]

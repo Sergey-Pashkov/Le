@@ -2,10 +2,13 @@
 {% extends "Accounting_button/base.html" %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-4">
     <h2>Дашборд Собственника</h2>
     <p>Добро пожаловать, {{ user.username }}!</p>
-    <!-- Добавьте здесь содержимое дашборда -->
-    <a href="{% url 'Accounting_button:functions_list' %}" class="btn btn-primary">Функции исполнителей</a>
+    <!-- Оберните кнопки в контейнер с классом btn-group и добавьте margin-right к кнопкам -->
+    <div class="btn-group" role="group">
+        <a href="{% url 'Accounting_button:functions_list' %}" class="btn btn-primary mr-2 mb-2">Функции исполнителей</a>
+        <a href="{% url 'Accounting_button:rates_list' %}" class="btn btn-primary mb-2">Тарифы исполнителей</a>
+    </div>
 </div>
 {% endblock %}

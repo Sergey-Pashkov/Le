@@ -1,10 +1,10 @@
-<!-- templates/Accounting_button/functions_of_performers/function_form.html -->
+<!-- Accounting_button/templates/Accounting_button/performers_rates/rate_form.html -->
 {% extends "Accounting_button/base.html" %}
 {% load form_tags %}  <!-- Подключаем созданные фильтры -->
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Добавить / Редактировать</h2>
+    <h2 class="mb-4">Добавить / Редактировать тариф исполнителя</h2>
     
     <form method="post">
         {% csrf_token %}
@@ -13,8 +13,8 @@
             {{ form.name|add_class:"form-control" }}  <!-- Добавление класса form-control к полю name -->
         </div>
         <div class="form-group">
-            <label for="id_description">Описание</label>
-            {{ form.description|add_class:"form-control" }}  <!-- Добавление класса form-control к полю description -->
+            <label for="id_cost_per_minute">Стоимость за минуту</label>
+            {{ form.cost_per_minute|add_class:"form-control" }}  <!-- Добавление класса form-control к полю cost_per_minute -->
         </div>
         <button type="submit" class="btn btn-primary">Сохранить</button>
     </form>
