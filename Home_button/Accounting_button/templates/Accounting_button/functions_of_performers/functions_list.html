@@ -5,6 +5,9 @@
 {% block content %}
 <div class="container">
     <h2>Функции исполнителей (должности)</h2>
+    
+    <p>Добро пожаловать, {{ user.username }}!</p>  <!-- Приветствие пользователя -->
+    
     <ul>
         {% for function in functions %}
             <li>
