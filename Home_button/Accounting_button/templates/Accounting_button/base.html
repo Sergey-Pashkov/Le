@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>{% block title %}My Site{% endblock %}</title>
     {% load static %}
+    {% load user_tags %}  <!-- Подключаем пользовательские фильтры -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'Accounting_button/css/styles.css' %}">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -36,7 +37,16 @@
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <form method="post" action="{% url 'Accounting_button:logout' %}">
+                            {% if user|has_group:"Собственник" %}
+                                <a class="nav-link" href="{% url 'Accounting_button:owner_dashboard' %}">Dashboard</a>
+                            {% elif user|has_group:"Организатор" %}
+                                <a class="nav-link" href="{% url 'Accounting_button:organizer_dashboard' %}">Dashboard</a>
+                            {% elif user|has_group:"Исполнитель" %}
+                                <a class="nav-link" href="{% url 'Accounting_button:executor_dashboard' %}">Dashboard</a>
+                            {% endif %}
+                        </li>
+                        <li class="nav-item">
+                            <form method="post" action="{% url 'Accounting_button:logout' %}" style="display: inline;">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-link nav-link" style="padding: 0;">Logout</button>
                             </form>
