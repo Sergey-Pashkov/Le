@@ -17,3 +17,8 @@ from django.contrib import admin
 from .models import PerformersRates
 
 admin.site.register(PerformersRates)
+
+
+from .models import StaffingSchedule
+
+admin.site.register(StaffingSchedule)

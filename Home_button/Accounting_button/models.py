@@ -26,3 +26,42 @@ class PerformersRates(models.Model):
 
     def __str__(self):
         return self.name
+
+
+
+class StaffingSchedule(models.Model):
+    # Поле 'name' с выбором из поля 'name' модели 'Functions_of_performers', поведение PROTECT, уникальное значение
+    name = models.ForeignKey('Functions_of_performers', on_delete=models.PROTECT, unique=True)
+
+    # Поле 'rate' с выбором из поля 'name' модели 'PerformersRates', поведение PROTECT
+    rate = models.ForeignKey('PerformersRates', on_delete=models.PROTECT)
+
+    # Поле 'quantity' для хранения положительного целого числа
+    quantity = models.PositiveIntegerField()
+
+    # Поле 'time_norm' для хранения положительного целого числа
+    time_norm = models.PositiveIntegerField()
+
+    # Поле 'time_fund' рассчитывается как произведение 'quantity' и 'time_norm'
+    time_fund = models.PositiveIntegerField(editable=False)
+
+    # Поле 'wage_fund' рассчитывается как произведение 'time_fund' и 'cost_per_minute' из 'PerformersRates'
+    wage_fund = models.DecimalField(max_digits=15, decimal_places=2, editable=False)
+
+    # Поле 'owner' с поведением SET_NULL, если пользователь удаляется
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='staffing_schedules')
+
+    def save(self, *args, **kwargs):
+        # Рассчитываем 'time_fund' как произведение 'quantity' и 'time_norm'
+        self.time_fund = self.quantity * self.time_norm
+
+        # Получаем 'cost_per_minute' из связанного 'rate'
+        cost_per_minute = self.rate.cost_per_minute
+
+        # Рассчитываем 'wage_fund' как произведение 'time_fund' и 'cost_per_minute'
+        self.wage_fund = self.time_fund * cost_per_minute
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return str(self.name)
