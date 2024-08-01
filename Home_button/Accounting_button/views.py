@@ -169,23 +169,38 @@ from django.contrib.auth.decorators import login_required, permission_required
 from .models import StaffingSchedule
 from .forms import StaffingScheduleForm
 
+# views.py
+# views.py
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from .models import Functions_of_performers, PerformersRates, StaffingSchedule
+from .forms import FunctionsOfPerformersForm, PerformersRatesForm, StaffingScheduleForm
+
 @login_required
 @permission_required('Accounting_button.view_staffingschedule', raise_exception=True)
 def schedules_list(request):
-    """
-    Представление для отображения списка всех расписаний штата.
-    Доступно только авторизованным пользователям с соответствующим разрешением.
-    """
     schedules = StaffingSchedule.objects.all()
 
     total_time_fund = sum(schedule.time_fund for schedule in schedules)
     total_wage_fund = sum(schedule.wage_fund for schedule in schedules)
+    total_quantity = sum(schedule.quantity for schedule in schedules)
+    total_time_fund_hours = total_time_fund / 60.0
+
+    # Добавим перевод фонда времени для каждого расписания в часы
+    for schedule in schedules:
+        schedule.time_fund_hours = schedule.time_fund / 60.0
 
     return render(request, 'Accounting_button/staffing_schedule/schedule_list.html', {
         'schedules': schedules,
         'total_time_fund': total_time_fund,
         'total_wage_fund': total_wage_fund,
+        'total_quantity': total_quantity,
+        'total_time_fund_hours': total_time_fund_hours,
     })
+
+
+
+
 
 # Другие представления для создания, чтения, обновления и удаления расписаний
 @login_required
