@@ -1,0 +1,30 @@
+<!-- templates/Accounting_button/staffing_schedule/schedule_form.html -->
+{% extends "Accounting_button/base.html" %}
+{% load form_tags %}  <!-- Подключаем созданные фильтры -->
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Добавить / Редактировать расписание штата</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_name">Название</label>
+            {{ form.name|add_class:"form-control" }}  <!-- Добавление класса form-control к полю name -->
+        </div>
+        <div class="form-group">
+            <label for="id_rate">Тариф (в рублях)</label>
+            {{ form.rate|add_class:"form-control" }}  <!-- Добавление класса form-control к полю rate -->
+        </div>
+        <div class="form-group">
+            <label for="id_quantity">Количество</label>
+            {{ form.quantity|add_class:"form-control" }}  <!-- Добавление класса form-control к полю quantity -->
+        </div>
+        <div class="form-group">
+            <label for="id_time_norm">Норма времени (в минутах)</label>
+            {{ form.time_norm|add_class:"form-control" }}  <!-- Добавление класса form-control к полю time_norm -->
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </form>
+</div>
+{% endblock %}

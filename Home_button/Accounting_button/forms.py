@@ -18,3 +18,14 @@ class PerformersRatesForm(forms.ModelForm):
         if cost < 0:
             raise ValidationError("Стоимость за минуту не может быть отрицательной.")
         return cost
+
+
+
+from django import forms
+from .models import StaffingSchedule
+
+# Форма для создания и редактирования расписаний штатного расписания
+class StaffingScheduleForm(forms.ModelForm):
+    class Meta:
+        model = StaffingSchedule  # Указываем модель для формы
+        fields = ['name', 'rate', 'quantity', 'time_norm']  # Поля, которые будут использоваться в форме

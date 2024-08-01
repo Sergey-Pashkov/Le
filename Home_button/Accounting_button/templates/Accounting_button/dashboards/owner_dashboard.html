@@ -1,4 +1,3 @@
-<!-- Accounting_button/templates/Accounting_button/dashboards/owner_dashboard.html -->
 {% extends "Accounting_button/base.html" %}
 
 {% block content %}
@@ -7,8 +6,9 @@
     <p>Добро пожаловать, {{ user.username }}!</p>
     <!-- Оберните кнопки в контейнер с классом btn-group и добавьте margin-right к кнопкам -->
     <div class="btn-group" role="group">
-        <a href="{% url 'Accounting_button:functions_list' %}" class="btn btn-primary mr-2 mb-2">Функции исполнителей</a>
-        <a href="{% url 'Accounting_button:rates_list' %}" class="btn btn-primary mb-2">Тарифы исполнителей</a>
+        <a href="{% url 'Accounting_button:functions_list' %}" class="btn btn-primary mr-2 mb-2">Функции исполнителей</a> <!-- Кнопка для перехода к функциям исполнителей -->
+        <a href="{% url 'Accounting_button:rates_list' %}" class="btn btn-primary mr-2 mb-2">Тарифы исполнителей</a> <!-- Кнопка для перехода к тарифам исполнителей -->
+        <a href="{% url 'Accounting_button:schedules_list' %}" class="btn btn-primary mb-2">Штатное расписание</a> <!-- Кнопка для перехода к штатному расписанию -->
     </div>
 </div>
 {% endblock %}

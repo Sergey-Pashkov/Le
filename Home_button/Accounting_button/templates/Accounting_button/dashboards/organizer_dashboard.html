@@ -8,7 +8,8 @@
     <!-- Оберните кнопки в контейнер с классом btn-group и добавьте margin-right к кнопкам -->
     <div class="btn-group" role="group">
         <a href="{% url 'Accounting_button:functions_list' %}" class="btn btn-primary mr-2">Функции исполнителей</a>
-        <a href="{% url 'Accounting_button:rates_list' %}" class="btn btn-primary">Тарифы исполнителей</a>
+        <a href="{% url 'Accounting_button:rates_list' %}" class="btn btn-primary mr-2">Тарифы исполнителей</a>
+        <a href="{% url 'Accounting_button:schedules_list' %}" class="btn btn-primary">Штатное расписание</a>
     </div>
 </div>
 {% endblock %}

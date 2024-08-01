@@ -1,0 +1,20 @@
+<!-- templates/Accounting_button/staffing_schedule/schedule_detail.html -->
+{% extends "Accounting_button/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ schedule.name }}</h1>
+    <p>Тариф: {{ schedule.rate }}</p>
+    <p>Количество: {{ schedule.quantity }}</p>
+    <p>Норма времени: {{ schedule.time_norm }}</p>
+    <p>Фонд времени: {{ schedule.time_fund }}</p>
+    <p>Фонд заработной платы: {{ schedule.wage_fund }}</p>
+
+    {% if perms.Accounting_button.change_staffingschedule %}
+        <a href="{% url 'Accounting_button:update_schedule' schedule.id %}" class="btn btn-primary me-2">Редактировать</a>
+    {% endif %}
+    {% if perms.Accounting_button.delete_staffingschedule %}
+        <a href="{% url 'Accounting_button:delete_schedule' schedule.id %}" class="btn btn-danger">Удалить</a>
+    {% endif %}
+</div>
+{% endblock %}

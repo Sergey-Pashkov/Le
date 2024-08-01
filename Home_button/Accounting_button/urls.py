@@ -24,4 +24,11 @@ urlpatterns = [
     path('rates/<int:rate_id>/', views.read_rate, name='read_rate'),  # Путь для отображения деталей тарифа
     path('rates/<int:rate_id>/update/', views.update_rate, name='update_rate'),  # Путь для обновления тарифа
     path('rates/<int:rate_id>/delete/', views.delete_rate, name='delete_rate'),  # Путь для удаления тарифа
+
+    # Пути для управления расписаниями штата
+    path('schedules/', views.schedules_list, name='schedules_list'),  # Путь для просмотра списка расписаний
+    path('schedules/create/', views.create_schedule, name='create_schedule'),  # Путь для создания нового расписания
+    path('schedules/<int:schedule_id>/', views.read_schedule, name='read_schedule'),  # Путь для просмотра деталей расписания
+    path('schedules/<int:schedule_id>/update/', views.update_schedule, name='update_schedule'),  # Путь для обновления расписания
+    path('schedules/<int:schedule_id>/delete/', views.delete_schedule, name='delete_schedule'),  # Путь для удаления расписания
 ]

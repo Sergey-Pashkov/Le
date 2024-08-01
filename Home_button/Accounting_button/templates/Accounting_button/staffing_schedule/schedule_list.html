@@ -1,0 +1,49 @@
+<!-- templates/Accounting_button/staffing_schedule/schedule_list.html -->
+{% extends "Accounting_button/base.html" %}
+{% load permissions %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Расписания штата</h2>
+            <p class="lead">Добро пожаловать, {{ user.username }}!</p> <!-- Приветствие пользователя -->
+
+            <div class="list-group">
+                {% for schedule in schedules %}
+                    <div class="list-group-item mb-2">
+                        <h5 class="mb-1">{{ schedule.name }}</h5>
+                        <p class="mb-1">Тариф: {{ schedule.rate }}</p>
+                        <p class="mb-1">Количество: {{ schedule.quantity }}</p>
+                        <p class="mb-1">Норма времени: {{ schedule.time_norm }} минут</p>
+                        <p class="mb-1">Фонд времени: {{ schedule.time_fund }} минут ({{ schedule.time_fund|divisibleby:60 }} часов)</p>
+                        <p class="mb-1">Фонд заработной платы: {{ schedule.wage_fund }} рублей</p>
+
+                        {% if schedule.id %}
+                            <div class="btn-group" role="group" aria-label="Schedule Actions">
+                                {% if user|has_perm:"Accounting_button.change_staffingschedule" %}
+                                    <a href="{% url 'Accounting_button:update_schedule' schedule.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
+                                {% endif %}
+                                {% if user|has_perm:"Accounting_button.delete_staffingschedule" %}
+                                    <a href="{% url 'Accounting_button:delete_schedule' schedule.id %}" class="btn btn-danger btn-sm">Удалить</a>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% if user|has_perm:"Accounting_button.add_staffingschedule" %}
+                <a href="{% url 'Accounting_button:create_schedule' %}" class="btn btn-success mt-4">Добавить новое расписание</a>
+            {% endif %}
+
+            <!-- Итоговые значения -->
+            <div class="mt-4">
+                <h3>Итоговые значения</h3>
+                <p>Общий фонд времени: {{ total_time_fund }} минут ({{ total_time_fund|divisibleby:60 }} часов)</p>
+                <p>Общий фонд заработной платы: {{ total_wage_fund }} рублей</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

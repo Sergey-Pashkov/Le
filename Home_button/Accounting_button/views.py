@@ -160,3 +160,88 @@ def delete_rate(request, rate_id):
 def rates_list(request):
     rates = PerformersRates.objects.all()  # Получаем все тарифы из базы данных
     return render(request, 'Accounting_button/performers_rates/rates_list.html', {'rates': rates})
+
+
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from .models import StaffingSchedule
+from .forms import StaffingScheduleForm
+
+@login_required
+@permission_required('Accounting_button.view_staffingschedule', raise_exception=True)
+def schedules_list(request):
+    """
+    Представление для отображения списка всех расписаний штата.
+    Доступно только авторизованным пользователям с соответствующим разрешением.
+    """
+    schedules = StaffingSchedule.objects.all()
+
+    total_time_fund = sum(schedule.time_fund for schedule in schedules)
+    total_wage_fund = sum(schedule.wage_fund for schedule in schedules)
+
+    return render(request, 'Accounting_button/staffing_schedule/schedule_list.html', {
+        'schedules': schedules,
+        'total_time_fund': total_time_fund,
+        'total_wage_fund': total_wage_fund,
+    })
+
+# Другие представления для создания, чтения, обновления и удаления расписаний
+@login_required
+@permission_required('Accounting_button.add_staffingschedule', raise_exception=True)
+def create_schedule(request):
+    """
+    Представление для создания нового расписания штата.
+    Доступно только авторизованным пользователям с соответствующим разрешением.
+    """
+    if request.method == 'POST':
+        form = StaffingScheduleForm(request.POST)
+        if form.is_valid():
+            schedule = form.save(commit=False)
+            schedule.owner = request.user
+            schedule.save()
+            return redirect('Accounting_button:schedules_list')
+    else:
+        form = StaffingScheduleForm()
+    return render(request, 'Accounting_button/staffing_schedule/schedule_form.html', {'form': form})
+
+@login_required
+@permission_required('Accounting_button.view_staffingschedule', raise_exception=True)
+def read_schedule(request, schedule_id):
+    """
+    Представление для отображения деталей расписания штата.
+    Доступно только авторизованным пользователям с соответствующим разрешением.
+    """
+    schedule = get_object_or_404(StaffingSchedule, id=schedule_id)
+    return render(request, 'Accounting_button/staffing_schedule/schedule_detail.html', {'schedule': schedule})
+
+@login_required
+@permission_required('Accounting_button.change_staffingschedule', raise_exception=True)
+def update_schedule(request, schedule_id):
+    """
+    Представление для обновления существующего расписания штата.
+    Доступно только авторизованным пользователям с соответствующим разрешением.
+    """
+    schedule = get_object_or_404(StaffingSchedule, id=schedule_id)
+    if request.method == 'POST':
+        form = StaffingScheduleForm(request.POST, instance=schedule)
+        if form.is_valid():
+            form.save()
+            return redirect('Accounting_button:schedules_list')
+    else:
+        form = StaffingScheduleForm(instance=schedule)
+    return render(request, 'Accounting_button/staffing_schedule/schedule_form.html', {'form': form, 'schedule': schedule})
+
+@login_required
+@permission_required('Accounting_button.delete_staffingschedule', raise_exception=True)
+def delete_schedule(request, schedule_id):
+    """
+    Представление для удаления существующего расписания штата.
+    Доступно только авторизованным пользователям с соответствующим разрешением.
+    """
+    schedule = get_object_or_404(StaffingSchedule, id=schedule_id)
+    if request.method == 'POST':
+        schedule.delete()
+        return redirect('Accounting_button:schedules_list')
+    return render(request, 'Accounting_button/staffing_schedule/schedule_confirm_delete.html', {'schedule': schedule})
