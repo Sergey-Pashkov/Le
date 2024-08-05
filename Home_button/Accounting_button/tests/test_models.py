@@ -158,3 +158,37 @@ class OrganizersRatesModelTest(TestCase):
         
         with self.assertRaises(OrganizersRates.DoesNotExist):
             OrganizersRates.objects.get(id=rate_id)
+
+
+# test_models.py
+
+from django.test import TestCase
+from django.contrib.auth.models import User
+from Accounting_button.models import TaxationSystems
+
+class TaxationSystemsModelTest(TestCase):
+    def setUp(self):
+        # Создаем тестового пользователя
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+
+    def test_create_taxation_system(self):
+        # Создаем объект налоговой системы
+        taxation_system = TaxationSystems.objects.create(
+            name='General Taxation System',
+            description='This is a general taxation system.',
+            owner=self.user
+        )
+        # Проверяем, что объект создан
+        self.assertEqual(taxation_system.name, 'General Taxation System')
+        self.assertEqual(taxation_system.description, 'This is a general taxation system.')
+        self.assertEqual(taxation_system.owner, self.user)
+
+    def test_taxation_system_str(self):
+        # Создаем объект налоговой системы
+        taxation_system = TaxationSystems.objects.create(
+            name='General Taxation System',
+            description='This is a general taxation system.',
+            owner=self.user
+        )
+        # Проверяем, что метод __str__ возвращает правильное значение
+        self.assertEqual(str(taxation_system), 'General Taxation System')

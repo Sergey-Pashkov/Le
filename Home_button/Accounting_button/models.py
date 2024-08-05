@@ -114,3 +114,20 @@ class OrganizersRates(models.Model):
     def __str__(self):
         return str(self.name)
     # Возвращает название функции при преобразовании объекта в строку
+
+
+# models.py
+
+from django.db import models
+from django.contrib.auth.models import User
+
+class TaxationSystems(models.Model):
+    """
+    Модель для хранения налоговых систем.
+    """
+    name = models.CharField(max_length=255)  # Поле для хранения названия налоговой системы
+    description = models.TextField()  # Поле для хранения описания налоговой системы
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='taxation_systems')  # Внешний ключ на пользователя, который может быть NULL
+
+    def __str__(self):
+        return self.name  # Возвращает название налоговой системы при преобразовании объекта в строку

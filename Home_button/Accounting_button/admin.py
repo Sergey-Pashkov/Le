@@ -46,3 +46,14 @@ class OrganizersRatesAdmin(admin.ModelAdmin):
     """
     list_display = ('name', 'standard', 'description', 'owner')  # Поля, отображаемые в списке объектов
     search_fields = ('name__name', 'description')  # Поля для поиска
+
+
+# admin.py
+
+from django.contrib import admin
+from .models import TaxationSystems
+
+@admin.register(TaxationSystems)
+class TaxationSystemsAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'owner')
+    search_fields = ('name', 'description')
