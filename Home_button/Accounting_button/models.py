@@ -66,3 +66,17 @@ class StaffingSchedule(models.Model):
     def __str__(self):
         return str(self.name)
 
+
+from django.db import models
+from django.contrib.auth.models import User
+
+class Functions_of_organizers(models.Model):
+    """
+    Модель для хранения функций организаторов.
+    """
+    name = models.CharField(max_length=255)  # Поле для хранения названия функции
+    description = models.TextField()  # Поле для хранения описания функции
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='functions_of_organizers')  # Внешний ключ на пользователя, который может быть NULL
+
+    def __str__(self):
+        return self.name  # Возвращает название функции при преобразовании объекта в строку
