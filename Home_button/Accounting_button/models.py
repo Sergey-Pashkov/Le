@@ -28,10 +28,15 @@ class PerformersRates(models.Model):
         return self.name
 
 
+from django.db import models
+from django.contrib.auth.models import User
 
 class StaffingSchedule(models.Model):
+    """
+    Модель для хранения расписания штатного расписания.
+    """
     # Поле 'name' с выбором из поля 'name' модели 'Functions_of_performers', поведение PROTECT, уникальное значение
-    name = models.ForeignKey('Functions_of_performers', on_delete=models.PROTECT, unique=True)
+    name = models.OneToOneField('Functions_of_performers', on_delete=models.PROTECT)
 
     # Поле 'rate' с выбором из поля 'name' модели 'PerformersRates', поведение PROTECT
     rate = models.ForeignKey('PerformersRates', on_delete=models.PROTECT)
