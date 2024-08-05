@@ -92,15 +92,26 @@ def delete_function(request, function_id):
     Представление для удаления существующей функции исполнителя.
     Доступно только авторизованным пользователям с правом удаления функций исполнителей.
     """
+    # Получаем объект функции по ID или возвращаем 404, если не найдено
     function = get_object_or_404(Functions_of_performers, id=function_id)
+    
+    # Если запрос POST, пытаемся удалить функцию
     if request.method == 'POST':
         try:
+            # Пытаемся удалить функцию
             function.delete()
+            # Добавляем сообщение об успешном удалении
             messages.success(request, 'Функция успешно удалена.')
         except ProtectedError:
-            messages.error(request, 'Невозможно удалить эту функцию, так как она связана с записью штатного расписания.', extra_tags='alert-danger')
+            # Если возникает ошибка ProtectedError, добавляем сообщение об ошибке
+            messages.error(request, 'Невозможно удалить эту функцию, так как она связана с расписанием штатного расписания.', extra_tags='alert-danger')
+        # Редирект на страницу списка функций
         return redirect('Accounting_button:functions_list')
+    
+    # Если запрос не POST, отображаем страницу подтверждения удаления
     return render(request, 'Accounting_button/functions_of_performers/function_confirm_delete.html', {'function': function})
+
+
 
 
 @login_required
@@ -157,14 +168,34 @@ def update_rate(request, rate_id):
     return render(request, 'Accounting_button/performers_rates/rate_form.html', {'form': form, 'rate': rate})
 
 # Представление для удаления существующего тарифа
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import ProtectedError
+from .models import PerformersRates
+
 @login_required
 @permission_required('Accounting_button.delete_performersrates', raise_exception=True)
 def delete_rate(request, rate_id):
-    rate = get_object_or_404(PerformersRates, id=rate_id)  # Получаем тариф или возвращаем 404
+    """
+    Представление для удаления существующего тарифа исполнителя.
+    Доступно только авторизованным пользователям с правом удаления тарифов исполнителей.
+    """
+    rate = get_object_or_404(PerformersRates, id=rate_id)
     if request.method == 'POST':
-        rate.delete()  # Удаляем тариф
-        return redirect('Accounting_button:rates_list')  # Перенаправляем на список тарифов
+        try:
+            rate.delete()
+            messages.success(request, 'Тариф успешно удален.')
+        except ProtectedError:
+            messages.error(request, 'Невозможно удалить этот тариф, так как он связан с расписанием штатного расписания.', extra_tags='alert-danger')
+        return redirect('Accounting_button:rates_list')
     return render(request, 'Accounting_button/performers_rates/rate_confirm_delete.html', {'rate': rate})
+
+
+
+
+
+
 
 # Представление для отображения списка всех тарифов исполнителей
 @login_required
