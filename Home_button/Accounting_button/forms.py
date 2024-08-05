@@ -29,3 +29,11 @@ class StaffingScheduleForm(forms.ModelForm):
     class Meta:
         model = StaffingSchedule  # Указываем модель для формы
         fields = ['name', 'rate', 'quantity', 'time_norm']  # Поля, которые будут использоваться в форме
+
+from django import forms
+from .models import Functions_of_organizers
+
+class FunctionsOfOrganizersForm(forms.ModelForm):
+    class Meta:
+        model = Functions_of_organizers
+        fields = ['name', 'description']

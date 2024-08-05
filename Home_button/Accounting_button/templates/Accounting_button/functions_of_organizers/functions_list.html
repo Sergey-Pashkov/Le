@@ -1,0 +1,37 @@
+{% extends "Accounting_button/base.html" %}
+{% load permissions %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Функции организаторов</h2>
+            <p class="lead">Добро пожаловать, {{ user.username }}!</p>
+
+            <div class="list-group">
+                {% for function in functions %}
+                    <div class="list-group-item mb-2">
+                        <h5 class="mb-1">{{ function.name }}</h5>
+                        <p class="mb-1">{{ function.description }}</p>
+
+                        {% if function.id %}
+                            <div class="btn-group" role="group" aria-label="Function Actions">
+                                {% if user|has_perm:"Accounting_button.change_functions_of_organizers" %}
+                                    <a href="{% url 'Accounting_button:update_function_organizer' function.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
+                                {% endif %}
+                                {% if user|has_perm:"Accounting_button.delete_functions_of_organizers" %}
+                                    <a href="{% url 'Accounting_button:delete_function_organizer' function.id %}" class="btn btn-danger btn-sm mr-2">Удалить</a>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% if user|has_group:"Собственник" %}
+                <a href="{% url 'Accounting_button:create_function_organizer' %}" class="btn btn-success mt-4">Добавить</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

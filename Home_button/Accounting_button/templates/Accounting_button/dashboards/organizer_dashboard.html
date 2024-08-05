@@ -1,15 +1,15 @@
-<!-- Accounting_button/templates/Accounting_button/dashboards/organizer_dashboard.html -->
 {% extends "Accounting_button/base.html" %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-4">
     <h2>Дашборд Организатора</h2>
     <p>Добро пожаловать, {{ user.username }}!</p>
-    <!-- Оберните кнопки в контейнер с классом btn-group и добавьте margin-right к кнопкам -->
+    <!-- Оберните кнопки в контейнер с классом btn-group и добавьте margin-right и margin-bottom к кнопкам -->
     <div class="btn-group" role="group">
-        <a href="{% url 'Accounting_button:functions_list' %}" class="btn btn-primary mr-2">Функции исполнителей</a>
-        <a href="{% url 'Accounting_button:rates_list' %}" class="btn btn-primary mr-2">Тарифы исполнителей</a>
-        <a href="{% url 'Accounting_button:schedules_list' %}" class="btn btn-primary">Штатное расписание</a>
+        <a href="{% url 'Accounting_button:functions_list' %}" class="btn btn-primary mr-2 mb-2">Функции исполнителей</a>
+        <a href="{% url 'Accounting_button:rates_list' %}" class="btn btn-primary mr-2 mb-2">Тарифы исполнителей</a>
+        <a href="{% url 'Accounting_button:schedules_list' %}" class="btn btn-primary mr-2 mb-2">Штатное расписание</a>
+        <a href="{% url 'Accounting_button:functions_organizers_list' %}" class="btn btn-primary mb-2">Функции организаторов</a> <!-- Кнопка для перехода к функциям организаторов -->
     </div>
 </div>
 {% endblock %}

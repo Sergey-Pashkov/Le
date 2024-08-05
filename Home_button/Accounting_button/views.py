@@ -32,6 +32,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from .models import Functions_of_performers
 from .forms import FunctionsOfPerformersForm
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import ProtectedError
+from .models import Functions_of_performers  
 
 @login_required
 @permission_required('Accounting_button.add_functions_of_performers', raise_exception=True)
@@ -78,13 +83,6 @@ def update_function(request, function_id):
         form = FunctionsOfPerformersForm(instance=function)
     return render(request, 'Accounting_button/functions_of_performers/function_form.html', {'form': form, 'function': function})
 
-
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required, permission_required
-from django.db.models import ProtectedError
-from .models import Functions_of_performers
-
 @login_required
 @permission_required('Accounting_button.delete_functions_of_performers', raise_exception=True)
 def delete_function(request, function_id):
@@ -110,9 +108,6 @@ def delete_function(request, function_id):
     
     # Если запрос не POST, отображаем страницу подтверждения удаления
     return render(request, 'Accounting_button/functions_of_performers/function_confirm_delete.html', {'function': function})
-
-
-
 
 @login_required
 @permission_required('Accounting_button.view_functions_of_performers', raise_exception=True)
@@ -191,12 +186,6 @@ def delete_rate(request, rate_id):
         return redirect('Accounting_button:rates_list')
     return render(request, 'Accounting_button/performers_rates/rate_confirm_delete.html', {'rate': rate})
 
-
-
-
-
-
-
 # Представление для отображения списка всех тарифов исполнителей
 @login_required
 @permission_required('Accounting_button.view_performersrates', raise_exception=True)
@@ -204,7 +193,6 @@ def rates_list(request):
     rates = PerformersRates.objects.all()  # Получаем все тарифы из базы данных
     return render(request, 'Accounting_button/performers_rates/rates_list.html', {'rates': rates})
 
-# views.py
 # views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
@@ -293,4 +281,88 @@ def delete_schedule(request, schedule_id):
         return redirect('Accounting_button:schedules_list')
     return render(request, 'Accounting_button/staffing_schedule/schedule_confirm_delete.html', {'schedule': schedule})
 
+
+
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from .models import Functions_of_organizers
+from .forms import FunctionsOfOrganizersForm
+from django.contrib import messages
+from django.db.models import ProtectedError
+
+@login_required
+@permission_required('Accounting_button.add_functions_of_organizers', raise_exception=True)
+def create_function_organizer(request):
+    """
+    Представление для создания новой функции организатора.
+    Доступно только авторизованным пользователям с правом добавления функций организаторов.
+    """
+    if request.method == 'POST':
+        form = FunctionsOfOrganizersForm(request.POST)
+        if form.is_valid():
+            function = form.save(commit=False)
+            function.owner = request.user  # Устанавливаем текущего пользователя как владельца
+            function.save()
+            return redirect('Accounting_button:functions_organizers_list')
+    else:
+        form = FunctionsOfOrganizersForm()
+    return render(request, 'Accounting_button/functions_of_organizers/function_form.html', {'form': form})
+
+@login_required
+@permission_required('Accounting_button.view_functions_of_organizers', raise_exception=True)
+def read_function_organizer(request, function_id):
+    """
+    Представление для отображения деталей функции организатора.
+    Доступно только авторизованным пользователям с правом просмотра функций организаторов.
+    """
+    function = get_object_or_404(Functions_of_organizers, id=function_id)
+    return render(request, 'Accounting_button/functions_of_organizers/function_detail.html', {'function': function})
+
+@login_required
+@permission_required('Accounting_button.change_functions_of_organizers', raise_exception=True)
+def update_function_organizer(request, function_id):
+    """
+    Представление для обновления существующей функции организатора.
+    Доступно только авторизованным пользователям с правом изменения функций организаторов.
+    """
+    function = get_object_or_404(Functions_of_organizers, id=function_id)
+    if request.method == 'POST':
+        form = FunctionsOfOrganizersForm(request.POST, instance=function)
+        if form.is_valid():
+            form.save()
+            return redirect('Accounting_button:functions_organizers_list')
+    else:
+        form = FunctionsOfOrganizersForm(instance=function)
+    return render(request, 'Accounting_button/functions_of_organizers/function_form.html', {'form': form, 'function': function})
+
+@login_required
+@permission_required('Accounting_button.delete_functions_of_organizers', raise_exception=True)
+def delete_function_organizer(request, function_id):
+    """
+    Представление для удаления существующей функции организатора.
+    Доступно только авторизованным пользователям с правом удаления функций организаторов.
+    """
+    function = get_object_or_404(Functions_of_organizers, id=function_id)
+    
+    if request.method == 'POST':
+        try:
+            function.delete()
+            messages.success(request, 'Функция успешно удалена.')
+        except ProtectedError:
+            messages.error(request, 'Невозможно удалить эту функцию, так как она связана с другим объектом.', extra_tags='alert-danger')
+        return redirect('Accounting_button:functions_organizers_list')
+    
+    return render(request, 'Accounting_button/functions_of_organizers/function_confirm_delete.html', {'function': function})
+
+@login_required
+@permission_required('Accounting_button.view_functions_of_organizers', raise_exception=True)
+def functions_organizers_list(request):
+    """
+    Представление для отображения списка всех функций организаторов.
+    Доступно только авторизованным пользователям с правом просмотра функций организаторов.
+    """
+    functions = Functions_of_organizers.objects.all()
+    return render(request, 'Accounting_button/functions_of_organizers/functions_list.html', {'functions': functions})
 

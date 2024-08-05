@@ -31,4 +31,19 @@ urlpatterns = [
     path('schedules/<int:schedule_id>/', views.read_schedule, name='read_schedule'),  # Путь для просмотра деталей расписания
     path('schedules/<int:schedule_id>/update/', views.update_schedule, name='update_schedule'),  # Путь для обновления расписания
     path('schedules/<int:schedule_id>/delete/', views.delete_schedule, name='delete_schedule'),  # Путь для удаления расписания
+
+    # Путь для отображения списка функций организаторов
+    path('functions/organizers/', views.functions_organizers_list, name='functions_organizers_list'),
+    
+    # Путь для создания новой функции организатора
+    path('functions/organizers/create/', views.create_function_organizer, name='create_function_organizer'),
+    
+    # Путь для отображения деталей функции организатора
+    path('functions/organizers/<int:function_id>/', views.read_function_organizer, name='read_function_organizer'),
+    
+    # Путь для обновления существующей функции организатора
+    path('functions/organizers/<int:function_id>/update/', views.update_function_organizer, name='update_function_organizer'),
+    
+    # Путь для удаления существующей функции организатора
+    path('functions/organizers/<int:function_id>/delete/', views.delete_function_organizer, name='delete_function_organizer'),
 ]
