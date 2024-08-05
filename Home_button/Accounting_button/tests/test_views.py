@@ -260,5 +260,101 @@ class StaffingScheduleViewTests(TestCase):
 
 
 
+from django.test import TestCase, Client
+from django.urls import reverse
+from django.contrib.auth.models import User, Permission
+from Accounting_button.models import Functions_of_organizers
+from Accounting_button.forms import FunctionsOfOrganizersForm
+
+class FunctionsOfOrganizersViewTests(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+
+        # Создаем пользователя и авторизуем его
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.user.user_permissions.add(Permission.objects.get(codename='add_functions_of_organizers'))
+        self.user.user_permissions.add(Permission.objects.get(codename='view_functions_of_organizers'))
+        self.user.user_permissions.add(Permission.objects.get(codename='change_functions_of_organizers'))
+        self.user.user_permissions.add(Permission.objects.get(codename='delete_functions_of_organizers'))
+        self.client.login(username='testuser', password='12345')
+
+        # Создаем тестовую функцию организатора
+        self.function = Functions_of_organizers.objects.create(
+            name='Организатор мероприятия',
+            description='Отвечает за организацию и проведение мероприятий.',
+            owner=self.user
+        )
+
+    def test_create_function_organizer_view(self):
+        """
+        Тестирование представления для создания новой функции организатора.
+        """
+        url = reverse('Accounting_button:create_function_organizer')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'Accounting_button/functions_of_organizers/function_form.html')
+
+        data = {
+            'name': 'Новый организатор',
+            'description': 'Новая функция.',
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('Accounting_button:functions_organizers_list'))
+        self.assertTrue(Functions_of_organizers.objects.filter(name='Новый организатор').exists())
+
+    def test_read_function_organizer_view(self):
+        """
+        Тестирование представления для отображения деталей функции организатора.
+        """
+        url = reverse('Accounting_button:read_function_organizer', args=[self.function.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'Accounting_button/functions_of_organizers/function_detail.html')
+        self.assertContains(response, self.function.name)
+
+    def test_update_function_organizer_view(self):
+        """
+        Тестирование представления для обновления существующей функции организатора.
+        """
+        url = reverse('Accounting_button:update_function_organizer', args=[self.function.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'Accounting_button/functions_of_organizers/function_form.html')
+
+        data = {
+            'name': 'Обновленный организатор',
+            'description': 'Обновленное описание.',
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('Accounting_button:functions_organizers_list'))
+        self.function.refresh_from_db()
+        self.assertEqual(self.function.name, 'Обновленный организатор')
+
+    def test_delete_function_organizer_view(self):
+        """
+        Тестирование представления для удаления существующей функции организатора.
+        """
+        url = reverse('Accounting_button:delete_function_organizer', args=[self.function.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'Accounting_button/functions_of_organizers/function_confirm_delete.html')
+
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('Accounting_button:functions_organizers_list'))
+        self.assertFalse(Functions_of_organizers.objects.filter(id=self.function.id).exists())
+
+    def test_functions_organizers_list_view(self):
+        """
+        Тестирование представления для отображения списка всех функций организаторов.
+        """
+        url = reverse('Accounting_button:functions_organizers_list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'Accounting_button/functions_of_organizers/functions_list.html')
+        self.assertContains(response, self.function.name)
 
 

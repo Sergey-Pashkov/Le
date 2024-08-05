@@ -130,3 +130,43 @@ class StaffingScheduleFormTestCase(TestCase):
         
         # Проверяем наличие ошибки для поля 'name'
         self.assertIn('name', form.errors)
+
+
+from django.test import TestCase
+from Accounting_button.forms import FunctionsOfOrganizersForm
+
+class FunctionsOfOrganizersFormTest(TestCase):
+    def test_valid_form(self):
+        """
+        Проверка, что форма валидна при правильных данных.
+        """
+        data = {
+            'name': 'Организатор мероприятия',
+            'description': 'Отвечает за организацию и проведение мероприятий.',
+        }
+        form = FunctionsOfOrganizersForm(data=data)
+        self.assertTrue(form.is_valid())
+
+    def test_invalid_form(self):
+        """
+        Проверка, что форма невалидна при отсутствии необходимых данных.
+        """
+        data = {
+            'name': '',
+            'description': 'Отвечает за организацию и проведение мероприятий.',
+        }
+        form = FunctionsOfOrganizersForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('name', form.errors)
+
+    def test_missing_description(self):
+        """
+        Проверка, что форма невалидна при отсутствии описания.
+        """
+        data = {
+            'name': 'Организатор мероприятия',
+            'description': '',
+        }
+        form = FunctionsOfOrganizersForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('description', form.errors)
