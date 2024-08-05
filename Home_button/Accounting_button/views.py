@@ -78,6 +78,13 @@ def update_function(request, function_id):
         form = FunctionsOfPerformersForm(instance=function)
     return render(request, 'Accounting_button/functions_of_performers/function_form.html', {'form': form, 'function': function})
 
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import ProtectedError
+from .models import Functions_of_performers
+
 @login_required
 @permission_required('Accounting_button.delete_functions_of_performers', raise_exception=True)
 def delete_function(request, function_id):
@@ -87,9 +94,14 @@ def delete_function(request, function_id):
     """
     function = get_object_or_404(Functions_of_performers, id=function_id)
     if request.method == 'POST':
-        function.delete()
+        try:
+            function.delete()
+            messages.success(request, 'Функция успешно удалена.')
+        except ProtectedError:
+            messages.error(request, 'Невозможно удалить эту функцию, так как она связана с записью штатного расписания.', extra_tags='alert-danger')
         return redirect('Accounting_button:functions_list')
     return render(request, 'Accounting_button/functions_of_performers/function_confirm_delete.html', {'function': function})
+
 
 @login_required
 @permission_required('Accounting_button.view_functions_of_performers', raise_exception=True)
@@ -249,3 +261,5 @@ def delete_schedule(request, schedule_id):
         schedule.delete()
         return redirect('Accounting_button:schedules_list')
     return render(request, 'Accounting_button/staffing_schedule/schedule_confirm_delete.html', {'schedule': schedule})
+
+
