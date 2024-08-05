@@ -46,4 +46,12 @@ urlpatterns = [
     
     # Путь для удаления существующей функции организатора
     path('functions/organizers/<int:function_id>/delete/', views.delete_function_organizer, name='delete_function_organizer'),
+
+
+    # Пути для управления ставками организаторов
+    path('organizers_rates/', views.organizers_rates_list, name='organizers_rates_list'),  # Путь для просмотра списка ставок
+    path('organizers_rates/create/', views.create_rate, name='create_rate'),  # Путь для создания новой ставки
+    path('organizers_rates/<int:rate_id>/', views.read_rate, name='read_rate'),  # Путь для просмотра деталей ставки
+    path('organizers_rates/<int:rate_id>/update/', views.update_rate, name='update_rate'),  # Путь для обновления ставки
+    path('organizers_rates/<int:rate_id>/delete/', views.delete_rate, name='delete_rate'),  # Путь для удаления ставки
 ]

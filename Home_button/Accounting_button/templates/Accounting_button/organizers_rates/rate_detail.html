@@ -1,0 +1,11 @@
+{% extends "Accounting_button/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">{{ rate.name }}</h2>
+    <p><strong>Ставка:</strong> {{ rate.standard }}</p>
+    <p><strong>Описание:</strong> {{ rate.description }}</p>
+    <p><strong>Владелец:</strong> {{ rate.owner }}</p>
+    <a href="{% url 'Accounting_button:organizers_rates_list' %}" class="btn btn-secondary">Назад к списку</a>
+</div>
+{% endblock %}

@@ -37,3 +37,12 @@ class FunctionsOfOrganizersForm(forms.ModelForm):
     class Meta:
         model = Functions_of_organizers
         fields = ['name', 'description']
+
+
+from django import forms
+from .models import OrganizersRates
+
+class OrganizersRatesForm(forms.ModelForm):
+    class Meta:
+        model = OrganizersRates
+        fields = ['name', 'standard', 'description']

@@ -366,3 +366,87 @@ def functions_organizers_list(request):
     functions = Functions_of_organizers.objects.all()
     return render(request, 'Accounting_button/functions_of_organizers/functions_list.html', {'functions': functions})
 
+
+
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib import messages
+from django.db.models import ProtectedError
+from .models import OrganizersRates
+from .forms import OrganizersRatesForm
+
+@login_required
+@permission_required('Accounting_button.add_organizersrates', raise_exception=True)
+def create_rate(request):
+    """
+    Представление для создания новой ставки организатора.
+    Доступно только авторизованным пользователям с правом добавления ставок.
+    """
+    if request.method == 'POST':
+        form = OrganizersRatesForm(request.POST)
+        if form.is_valid():
+            rate = form.save(commit=False)
+            rate.owner = request.user  # Устанавливаем текущего пользователя как владельца
+            rate.save()
+            return redirect('Accounting_button:organizers_rates_list')
+    else:
+        form = OrganizersRatesForm()
+    return render(request, 'Accounting_button/organizers_rates/rate_form.html', {'form': form})
+
+@login_required
+@permission_required('Accounting_button.view_organizersrates', raise_exception=True)
+def read_rate(request, rate_id):
+    """
+    Представление для отображения деталей ставки организатора.
+    Доступно только авторизованным пользователям с правом просмотра ставок.
+    """
+    rate = get_object_or_404(OrganizersRates, id=rate_id)
+    return render(request, 'Accounting_button/organizers_rates/rate_detail.html', {'rate': rate})
+
+@login_required
+@permission_required('Accounting_button.change_organizersrates', raise_exception=True)
+def update_rate(request, rate_id):
+    """
+    Представление для обновления существующей ставки организатора.
+    Доступно только авторизованным пользователям с правом изменения ставок.
+    """
+    rate = get_object_or_404(OrganizersRates, id=rate_id)
+    if request.method == 'POST':
+        form = OrganizersRatesForm(request.POST, instance=rate)
+        if form.is_valid():
+            form.save()
+            return redirect('Accounting_button:organizers_rates_list')
+    else:
+        form = OrganizersRatesForm(instance=rate)
+    return render(request, 'Accounting_button/organizers_rates/rate_form.html', {'form': form, 'rate': rate})
+
+@login_required
+@permission_required('Accounting_button.delete_organizersrates', raise_exception=True)
+def delete_rate(request, rate_id):
+    """
+    Представление для удаления существующей ставки организатора.
+    Доступно только авторизованным пользователям с правом удаления ставок.
+    """
+    rate = get_object_or_404(OrganizersRates, id=rate_id)
+    
+    if request.method == 'POST':
+        try:
+            rate.delete()
+            messages.success(request, 'Ставка успешно удалена.')
+        except ProtectedError:
+            messages.error(request, 'Невозможно удалить эту ставку, так как она связана с другим объектом.', extra_tags='alert-danger')
+        return redirect('Accounting_button:organizers_rates_list')
+    
+    return render(request, 'Accounting_button/organizers_rates/rate_confirm_delete.html', {'rate': rate})
+
+@login_required
+@permission_required('Accounting_button.view_organizersrates', raise_exception=True)
+def organizers_rates_list(request):
+    """
+    Представление для отображения списка всех ставок организаторов.
+    Доступно только авторизованным пользователям с правом просмотра ставок.
+    """
+    rates = OrganizersRates.objects.all()
+    return render(request, 'Accounting_button/organizers_rates/rates_list.html', {'rates': rates})
