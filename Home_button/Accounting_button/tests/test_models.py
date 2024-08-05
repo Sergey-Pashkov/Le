@@ -35,3 +35,60 @@ class FunctionsOfPerformersTest(TestCase):
             description='This function has no owner'
         )
         self.assertIsNone(function_without_owner.owner)
+
+
+
+from django.test import TestCase
+from django.contrib.auth.models import User
+from django.db.models import ProtectedError
+from Accounting_button.models import StaffingSchedule, Functions_of_performers, PerformersRates
+
+class StaffingScheduleTestCase(TestCase):
+    
+    def setUp(self):
+        # Создаем пользователя
+        self.user = User.objects.create_user(username='testuser', password='12345')
+
+        # Создаем запись в модели Functions_of_performers
+        self.function = Functions_of_performers.objects.create(name='Function1')
+
+        # Создаем запись в модели PerformersRates
+        self.rate = PerformersRates.objects.create(name='Rate1', cost_per_minute=2.5)
+
+        # Создаем объект StaffingSchedule
+        self.schedule = StaffingSchedule.objects.create(
+            name=self.function,
+            rate=self.rate,
+            quantity=10,
+            time_norm=60,
+            owner=self.user
+        )
+
+    def test_time_fund_calculation(self):
+        # Проверяем корректность расчета time_fund
+        self.schedule.save()
+        self.assertEqual(self.schedule.time_fund, 600)
+
+    def test_wage_fund_calculation(self):
+        # Проверяем корректность расчета wage_fund
+        self.schedule.save()
+        self.assertEqual(self.schedule.wage_fund, 1500.00)
+
+    def test_str_method(self):
+        # Проверяем метод __str__
+        self.assertEqual(str(self.schedule), 'Function1')
+
+    def test_protect_on_delete(self):
+        # Проверяем поведение PROTECT для поля 'name'
+        with self.assertRaises(ProtectedError):
+            self.function.delete()
+
+        # Проверяем поведение PROTECT для поля 'rate'
+        with self.assertRaises(ProtectedError):
+            self.rate.delete()
+
+    def test_set_null_on_delete(self):
+        # Проверяем поведение SET_NULL для поля 'owner'
+        self.user.delete()
+        self.schedule.refresh_from_db()
+        self.assertIsNone(self.schedule.owner)

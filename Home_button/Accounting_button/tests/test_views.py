@@ -166,3 +166,94 @@ class PerformersRatesViewTests(TestCase):
         response = self.client.post(reverse('Accounting_button:delete_rate', args=[self.rate.id]))
         self.assertEqual(response.status_code, 302)
         self.assertEqual(PerformersRates.objects.count(), 0)
+
+
+
+
+
+from django.test import TestCase, Client
+from django.urls import reverse
+from django.contrib.auth.models import User, Permission
+from Accounting_button.models import Functions_of_performers, PerformersRates, StaffingSchedule
+from Accounting_button.forms import StaffingScheduleForm
+
+class StaffingScheduleViewTests(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+
+        # Создаем пользователя и даем ему необходимые разрешения
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.user.user_permissions.add(Permission.objects.get(codename='view_staffingschedule'))
+        self.user.user_permissions.add(Permission.objects.get(codename='add_staffingschedule'))
+        self.user.user_permissions.add(Permission.objects.get(codename='change_staffingschedule'))
+        self.user.user_permissions.add(Permission.objects.get(codename='delete_staffingschedule'))
+        self.client.login(username='testuser', password='12345')
+
+        # Создаем данные для тестирования
+        self.function = Functions_of_performers.objects.create(name='Function1')
+        self.function2 = Functions_of_performers.objects.create(name='Function2')
+        self.rate = PerformersRates.objects.create(name='Rate1', cost_per_minute=2.5)
+        self.schedule = StaffingSchedule.objects.create(
+            name=self.function,
+            rate=self.rate,
+            quantity=10,
+            time_norm=60,
+            owner=self.user
+        )
+
+    def test_schedules_list_view(self):
+        response = self.client.get(reverse('Accounting_button:schedules_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'Accounting_button/staffing_schedule/schedule_list.html')
+        self.assertContains(response, self.schedule.name.name)
+        self.assertContains(response, self.schedule.rate.name)
+
+    def test_create_schedule_view(self):
+        response = self.client.get(reverse('Accounting_button:create_schedule'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'Accounting_button/staffing_schedule/schedule_form.html')
+
+        form_data = {
+            'name': self.function2.id,  # Используем другое имя, чтобы избежать дублирования
+            'rate': self.rate.id,
+            'quantity': 20,
+            'time_norm': 40
+        }
+        response = self.client.post(reverse('Accounting_button:create_schedule'), data=form_data)
+        if response.status_code == 200:
+            print(response.context['form'].errors)  # Вывод ошибок формы, если они есть
+        self.assertEqual(response.status_code, 302)  # Проверяем редирект после успешного создания
+        self.assertEqual(StaffingSchedule.objects.count(), 2)  # Проверяем, что объект был создан
+
+    def test_read_schedule_view(self):
+        response = self.client.get(reverse('Accounting_button:read_schedule', args=[self.schedule.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'Accounting_button/staffing_schedule/schedule_detail.html')
+        self.assertContains(response, self.schedule.name.name)
+
+    def test_update_schedule_view(self):
+        response = self.client.get(reverse('Accounting_button:update_schedule', args=[self.schedule.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'Accounting_button/staffing_schedule/schedule_form.html')
+
+        form_data = {
+            'name': self.function.id,
+            'rate': self.rate.id,
+            'quantity': 15,
+            'time_norm': 50
+        }
+        response = self.client.post(reverse('Accounting_button:update_schedule', args=[self.schedule.id]), data=form_data)
+        self.assertEqual(response.status_code, 302)  # Проверяем редирект после успешного обновления
+        self.schedule.refresh_from_db()
+        self.assertEqual(self.schedule.quantity, 15)
+        self.assertEqual(self.schedule.time_norm, 50)
+
+    def test_delete_schedule_view(self):
+        response = self.client.get(reverse('Accounting_button:delete_schedule', args=[self.schedule.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'Accounting_button/staffing_schedule/schedule_confirm_delete.html')
+
+        response = self.client.post(reverse('Accounting_button:delete_schedule', args=[self.schedule.id]))
+        self.assertEqual(response.status_code, 302)  # Проверяем редирект после успешного удаления
+        self.assertEqual(StaffingSchedule.objects.count(), 0)  # Проверяем, что объект был удален

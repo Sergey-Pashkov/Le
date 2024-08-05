@@ -161,14 +161,6 @@ def rates_list(request):
     rates = PerformersRates.objects.all()  # Получаем все тарифы из базы данных
     return render(request, 'Accounting_button/performers_rates/rates_list.html', {'rates': rates})
 
-
-
-
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required, permission_required
-from .models import StaffingSchedule
-from .forms import StaffingScheduleForm
-
 # views.py
 # views.py
 from django.shortcuts import render, get_object_or_404, redirect
@@ -197,9 +189,6 @@ def schedules_list(request):
         'total_quantity': total_quantity,
         'total_time_fund_hours': total_time_fund_hours,
     })
-
-
-
 
 
 # Другие представления для создания, чтения, обновления и удаления расписаний
