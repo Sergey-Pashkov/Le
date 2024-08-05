@@ -85,3 +85,32 @@ class Functions_of_organizers(models.Model):
 
     def __str__(self):
         return self.name  # Возвращает название функции при преобразовании объекта в строку
+
+
+
+from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib.auth.models import User
+
+class OrganizersRates(models.Model):
+    """
+    Модель для хранения ставок организаторов.
+    """
+    name = models.ForeignKey('Functions_of_organizers', on_delete=models.PROTECT)
+    # Поле 'name' с выбором из поля 'name' модели 'Functions_of_organizers', поведение PROTECT
+
+    standard = models.DecimalField(max_digits=5, decimal_places=2, validators=[
+        MaxValueValidator(100),
+        MinValueValidator(0)
+    ])
+    # Поле 'standard' для хранения положительного числа с двумя знаками после запятой, максимальное значение 100
+
+    description = models.TextField()
+    # Поле 'description' для хранения текста
+
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='organizers_rates')
+    # Поле 'owner' с поведением SET_NULL, если пользователь удаляется
+
+    def __str__(self):
+        return str(self.name)
+    # Возвращает название функции при преобразовании объекта в строку

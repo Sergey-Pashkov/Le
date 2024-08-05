@@ -92,3 +92,69 @@ class StaffingScheduleTestCase(TestCase):
         self.user.delete()
         self.schedule.refresh_from_db()
         self.assertIsNone(self.schedule.owner)
+
+from django.test import TestCase
+from django.contrib.auth.models import User
+from Accounting_button.models import Functions_of_organizers, OrganizersRates
+
+class OrganizersRatesModelTest(TestCase):
+
+    def setUp(self):
+        # Создаем пользователя для тестов
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        
+        # Создаем тестовую функцию организатора
+        self.function = Functions_of_organizers.objects.create(
+            name='Организатор мероприятия',
+            description='Отвечает за организацию и проведение мероприятий.',
+            owner=self.user
+        )
+
+    def test_create_organizers_rate(self):
+        """
+        Тестирование создания объекта OrganizersRates.
+        """
+        rate = OrganizersRates.objects.create(
+            name=self.function,
+            standard=25.50,
+            description='Тестовая ставка',
+            owner=self.user
+        )
+        self.assertEqual(rate.name, self.function)
+        self.assertEqual(rate.standard, 25.50)
+        self.assertEqual(rate.description, 'Тестовая ставка')
+        self.assertEqual(rate.owner, self.user)
+
+    def test_update_organizers_rate(self):
+        """
+        Тестирование обновления объекта OrganizersRates.
+        """
+        rate = OrganizersRates.objects.create(
+            name=self.function,
+            standard=25.50,
+            description='Тестовая ставка',
+            owner=self.user
+        )
+        rate.standard = 30.75
+        rate.description = 'Обновленная ставка'
+        rate.save()
+        
+        updated_rate = OrganizersRates.objects.get(id=rate.id)
+        self.assertEqual(updated_rate.standard, 30.75)
+        self.assertEqual(updated_rate.description, 'Обновленная ставка')
+
+    def test_delete_organizers_rate(self):
+        """
+        Тестирование удаления объекта OrganizersRates.
+        """
+        rate = OrganizersRates.objects.create(
+            name=self.function,
+            standard=25.50,
+            description='Тестовая ставка',
+            owner=self.user
+        )
+        rate_id = rate.id
+        rate.delete()
+        
+        with self.assertRaises(OrganizersRates.DoesNotExist):
+            OrganizersRates.objects.get(id=rate_id)

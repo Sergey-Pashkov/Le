@@ -33,3 +33,16 @@ class Functions_of_organizersAdmin(admin.ModelAdmin):
     """
     list_display = ('name', 'description', 'owner')  # Поля, отображаемые в списке объектов
     search_fields = ('name', 'description')  # Поля для поиска
+
+
+
+from django.contrib import admin
+from .models import OrganizersRates
+
+@admin.register(OrganizersRates)
+class OrganizersRatesAdmin(admin.ModelAdmin):
+    """
+    Админ-интерфейс для модели OrganizersRates.
+    """
+    list_display = ('name', 'standard', 'description', 'owner')  # Поля, отображаемые в списке объектов
+    search_fields = ('name__name', 'description')  # Поля для поиска
