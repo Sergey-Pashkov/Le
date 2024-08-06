@@ -75,4 +75,15 @@ urlpatterns = [
     path('groups/<int:group_id>/', views.read_group, name='read_group'),  # Путь для чтения группы
     path('groups/<int:group_id>/update/', views.update_group, name='update_group'),  # Путь для обновления группы
     path('groups/<int:group_id>/delete/', views.delete_group, name='delete_group'),  # Путь для удаления группы
+
+    # Путь для списка типов работ
+    path('types_of_jobs/', views.types_of_jobs_list, name='types_of_jobs_list'),
+    # Путь для создания нового типа работы
+    path('types_of_jobs/create/', views.create_type_of_job, name='create_type_of_job'),
+    # Путь для просмотра деталей типа работы по ID
+    path('types_of_jobs/<int:type_of_job_id>/', views.read_type_of_job, name='read_type_of_job'),
+    # Путь для обновления существующего типа работы по ID
+    path('types_of_jobs/<int:type_of_job_id>/update/', views.update_type_of_job, name='update_type_of_job'),
+    # Путь для удаления существующего типа работы по ID
+    path('types_of_jobs/<int:type_of_job_id>/delete/', views.delete_type_of_job, name='delete_type_of_job'),
 ]

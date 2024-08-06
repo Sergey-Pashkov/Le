@@ -1,0 +1,33 @@
+{% extends "Accounting_button/base.html" %}
+{% load form_tags %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">{% if type_of_job %}Редактировать{% else %}Создать{% endif %} тип работы</h2>
+   
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_name">Название</label>
+            {{ form.name|add_class:"form-control" }}
+        </div>
+        <div class="form-group">
+            <label for="id_description">Описание</label>
+            {{ form.description|add_class:"form-control" }}
+        </div>
+        <div class="form-group">
+            <label for="id_time_standard">Норма времени (мин.)</label>
+            {{ form.time_standard|add_class:"form-control" }}
+        </div>
+        <div class="form-group">
+            <label for="id_tariff_name">Тариф</label>
+            {{ form.tariff_name|add_class:"form-control" }}
+        </div>
+        <div class="form-group">
+            <label for="id_group">Группа</label>
+            {{ form.group|add_class:"form-control" }}
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </form>
+</div>
+{% endblock %}

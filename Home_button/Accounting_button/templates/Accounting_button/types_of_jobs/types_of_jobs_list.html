@@ -1,0 +1,27 @@
+{% extends "Accounting_button/base.html" %}
+{% load permissions %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Типы работ</h2>
+    <div class="list-group">
+        {% for type_of_job in types_of_jobs %}
+            <div class="list-group-item mb-2">
+                <h5 class="mb-1">{{ type_of_job.name }}</h5>
+                <p class="mb-1">{{ type_of_job.description }}</p>
+                <div class="btn-group mt-2" role="group" aria-label="TypeOfJob Actions">
+                    {% if user|has_perm:"Accounting_button.change_typesofjobs" %}
+                        <a href="{% url 'Accounting_button:update_type_of_job' type_of_job.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
+                    {% endif %}
+                    {% if user|has_perm:"Accounting_button.delete_typesofjobs" %}
+                        <a href="{% url 'Accounting_button:delete_type_of_job' type_of_job.id %}" class="btn btn-danger btn-sm">Удалить</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    {% if user|has_perm:"Accounting_button.add_typesofjobs" %}
+        <a href="{% url 'Accounting_button:create_type_of_job' %}" class="btn btn-success mt-4">Добавить новый тип работы</a>
+    {% endif %}
+</div>
+{% endblock %}

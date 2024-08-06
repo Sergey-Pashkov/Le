@@ -65,3 +65,11 @@ class GroupsOfTypesOfWorkForm(forms.ModelForm):
     class Meta:
         model = GroupsOfTypesOfWork
         fields = ['name', 'description']
+
+from django import forms
+from .models import TypesOfJobs
+
+class TypesOfJobsForm(forms.ModelForm):
+    class Meta:
+        model = TypesOfJobs
+        fields = ['name', 'description', 'time_standard', 'tariff_name', 'group']

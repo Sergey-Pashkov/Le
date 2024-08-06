@@ -584,3 +584,60 @@ def delete_group(request, group_id):
 def groups_list(request):
     groups = GroupsOfTypesOfWork.objects.all()
     return render(request, 'Accounting_button/groups_of_types_of_work/groups_list.html', {'groups': groups})
+
+
+
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from .models import TypesOfJobs
+from .forms import TypesOfJobsForm
+
+@login_required
+@permission_required('Accounting_button.add_typesofjobs', raise_exception=True)
+def create_type_of_job(request):
+    if request.method == 'POST':
+        form = TypesOfJobsForm(request.POST)
+        if form.is_valid():
+            type_of_job = form.save(commit=False)
+            type_of_job.owner = request.user  # Устанавливаем текущего пользователя как владельца
+            type_of_job.save()
+            return redirect('Accounting_button:types_of_jobs_list')
+    else:
+        form = TypesOfJobsForm()
+    return render(request, 'Accounting_button/types_of_jobs/type_of_job_form.html', {'form': form})
+
+@login_required
+@permission_required('Accounting_button.view_typesofjobs', raise_exception=True)
+def read_type_of_job(request, type_of_job_id):
+    type_of_job = get_object_or_404(TypesOfJobs, id=type_of_job_id)
+    return render(request, 'Accounting_button/types_of_jobs/type_of_job_detail.html', {'type_of_job': type_of_job})
+
+@login_required
+@permission_required('Accounting_button.change_typesofjobs', raise_exception=True)
+def update_type_of_job(request, type_of_job_id):
+    type_of_job = get_object_or_404(TypesOfJobs, id=type_of_job_id)
+    if request.method == 'POST':
+        form = TypesOfJobsForm(request.POST, instance=type_of_job)
+        if form.is_valid():
+            form.save()
+            return redirect('Accounting_button:types_of_jobs_list')
+    else:
+        form = TypesOfJobsForm(instance=type_of_job)
+    return render(request, 'Accounting_button/types_of_jobs/type_of_job_form.html', {'form': form, 'type_of_job': type_of_job})
+
+@login_required
+@permission_required('Accounting_button.delete_typesofjobs', raise_exception=True)
+def delete_type_of_job(request, type_of_job_id):
+    type_of_job = get_object_or_404(TypesOfJobs, id=type_of_job_id)
+    if request.method == 'POST':
+        type_of_job.delete()
+        return redirect('Accounting_button:types_of_jobs_list')
+    return render(request, 'Accounting_button/types_of_jobs/type_of_job_confirm_delete.html', {'type_of_job': type_of_job})
+
+@login_required
+@permission_required('Accounting_button.view_typesofjobs', raise_exception=True)
+def types_of_jobs_list(request):
+    types_of_jobs = TypesOfJobs.objects.all()
+    return render(request, 'Accounting_button/types_of_jobs/types_of_jobs_list.html', {'types_of_jobs': types_of_jobs})

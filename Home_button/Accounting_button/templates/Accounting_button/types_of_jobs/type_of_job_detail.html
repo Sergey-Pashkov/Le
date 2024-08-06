@@ -1,0 +1,16 @@
+{% extends "Accounting_button/base.html" %}
+
+{% block content %}
+<h1>{{ type_of_job.name }}</h1>
+<p>{{ type_of_job.description }}</p>
+<p>Стандартное время: {{ type_of_job.time_standard }}</p>
+<p>Тариф: {{ type_of_job.tariff }}</p>
+<p>Группа: {{ type_of_job.group.name }}</p>
+
+{% if perms.Accounting_button.change_typesofjobs %}
+    <a href="{% url 'Accounting_button:update_type_of_job' type_of_job.id %}" class="btn btn-primary">Редактировать</a>
+{% endif %}
+{% if perms.Accounting_button.delete_typesofjobs %}
+    <a href="{% url 'Accounting_button:delete_type_of_job' type_of_job.id %}" class="btn btn-danger">Удалить</a>
+{% endif %}
+{% endblock %}
