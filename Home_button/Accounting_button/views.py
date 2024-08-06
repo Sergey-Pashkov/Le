@@ -557,6 +557,11 @@ def delete_type_of_job(request, type_of_job_id):
         return redirect('Accounting_button:types_of_jobs_list')
     return render(request, 'Accounting_button/types_of_jobs/type_of_job_confirm_delete.html', {'type_of_job': type_of_job})
 
+from django.contrib import messages
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from .models import GroupsOfTypesOfWork, TypesOfJobs
+
 @login_required
 @permission_required('Accounting_button.view_typesofjobs', raise_exception=True)
 def types_of_jobs_list(request):
@@ -566,7 +571,11 @@ def types_of_jobs_list(request):
     """
     groups = GroupsOfTypesOfWork.objects.all().order_by('name')
     grouped_jobs = {group: TypesOfJobs.objects.filter(group=group).order_by('name') for group in groups}
-    return render(request, 'Accounting_button/types_of_jobs/types_of_jobs_list.html', {'grouped_jobs': grouped_jobs})
+    total_jobs = TypesOfJobs.objects.count()  # Подсчитываем общее количество типов работ
+    return render(request, 'Accounting_button/types_of_jobs/types_of_jobs_list.html', {
+        'grouped_jobs': grouped_jobs,
+        'total_jobs': total_jobs  # Передаем общее количество типов работ в контекст
+    })
 
 
 # Accounting_button/views.py

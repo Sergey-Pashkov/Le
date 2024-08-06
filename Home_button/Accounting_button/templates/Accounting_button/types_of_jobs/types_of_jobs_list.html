@@ -3,9 +3,9 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Виды работ</h2>
+    <h2 class="mb-4">Виды работ ({{ total_jobs }})</h2> <!-- Отображаем общее количество видов работ -->
     {% for group, jobs in grouped_jobs.items %}
-        <h3>{{ group.name }}</h3>
+        <h3>{{ group.name }} ({{ jobs|length }})</h3> <!-- Отображаем название группы и количество видов работ -->
         <div class="list-group">
             {% for type_of_job in jobs %}
                 <div class="list-group-item mb-2">
