@@ -193,6 +193,11 @@ def rates_list(request):
     rates = PerformersRates.objects.all()  # Получаем все тарифы из базы данных
     return render(request, 'Accounting_button/performers_rates/rates_list.html', {'rates': rates})
 
+
+
+
+
+
 # views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
@@ -527,8 +532,16 @@ def taxation_systems_list(request):
     return render(request, 'Accounting_button/taxation_systems/taxation_systems_list.html', {'taxation_systems': taxation_systems})
 
 
+
+
+
+
+
+
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import ProtectedError
 from .models import GroupsOfTypesOfWork
 from .forms import GroupsOfTypesOfWorkForm
 
@@ -536,6 +549,10 @@ from .forms import GroupsOfTypesOfWorkForm
 @login_required
 @permission_required('Accounting_button.add_groupsoftypesofwork', raise_exception=True)
 def create_group(request):
+    """
+    Представление для создания новой группы типов работ.
+    Доступно только авторизованным пользователям с правом добавления групп типов работ.
+    """
     if request.method == 'POST':
         form = GroupsOfTypesOfWorkForm(request.POST)
         if form.is_valid():
@@ -551,6 +568,10 @@ def create_group(request):
 @login_required
 @permission_required('Accounting_button.view_groupsoftypesofwork', raise_exception=True)
 def read_group(request, group_id):
+    """
+    Представление для отображения деталей группы типов работ.
+    Доступно только авторизованным пользователям с правом просмотра групп типов работ.
+    """
     group = get_object_or_404(GroupsOfTypesOfWork, id=group_id)
     return render(request, 'Accounting_button/groups_of_types_of_work/group_detail.html', {'group': group})
 
@@ -558,6 +579,10 @@ def read_group(request, group_id):
 @login_required
 @permission_required('Accounting_button.change_groupsoftypesofwork', raise_exception=True)
 def update_group(request, group_id):
+    """
+    Представление для обновления существующей группы типов работ.
+    Доступно только авторизованным пользователям с правом изменения групп типов работ.
+    """
     group = get_object_or_404(GroupsOfTypesOfWork, id=group_id)
     if request.method == 'POST':
         form = GroupsOfTypesOfWorkForm(request.POST, instance=group)
@@ -572,18 +597,41 @@ def update_group(request, group_id):
 @login_required
 @permission_required('Accounting_button.delete_groupsoftypesofwork', raise_exception=True)
 def delete_group(request, group_id):
+    """
+    Представление для удаления существующей группы типов работ.
+    Доступно только авторизованным пользователям с правом удаления групп типов работ.
+    """
     group = get_object_or_404(GroupsOfTypesOfWork, id=group_id)
     if request.method == 'POST':
-        group.delete()
-        return redirect('Accounting_button:groups_list')  # Перенаправление на список групп после удаления
+        try:
+            group.delete()
+            return redirect('Accounting_button:groups_list')  # Перенаправление на список групп после удаления
+        except ProtectedError:
+            # Отображаем сообщение об ошибке, если группа защищена
+            error_message = "Невозможно удалить группу, так как существуют связанные с ней виды работ."
+            return render(request, 'Accounting_button/groups_of_types_of_work/group_confirm_delete.html', {'group': group, 'error_message': error_message})
     return render(request, 'Accounting_button/groups_of_types_of_work/group_confirm_delete.html', {'group': group})
 
 # Представление для отображения списка всех групп типов работ
 @login_required
 @permission_required('Accounting_button.view_groupsoftypesofwork', raise_exception=True)
 def groups_list(request):
+    """
+    Представление для отображения списка всех групп типов работ.
+    Доступно только авторизованным пользователям с правом просмотра групп типов работ.
+    """
     groups = GroupsOfTypesOfWork.objects.all()
     return render(request, 'Accounting_button/groups_of_types_of_work/groups_list.html', {'groups': groups})
+
+
+
+
+
+
+
+
+
+
 
 
 

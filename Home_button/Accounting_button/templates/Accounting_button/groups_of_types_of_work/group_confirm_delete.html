@@ -1,12 +1,15 @@
 {% extends "Accounting_button/base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4">Удалить группу "{{ group.name }}"?</h2>
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Да, удалить</button>
-        <a href="{% url 'Accounting_button:read_group' group.id %}" class="btn btn-secondary">Отмена</a>
-    </form>
-</div>
+<h1>Вы уверены, что хотите удалить "ID: {{ group.id }} - {{ group.name }}"?</h1>
+{% if error_message %}
+    <div class="alert alert-danger" role="alert">
+        {{ error_message }}
+    </div>
+{% endif %}
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Да, удалить</button>
+    <a href="{% url 'Accounting_button:groups_list' %}" class="btn btn-secondary">Отмена</a>
+</form>
 {% endblock %}
