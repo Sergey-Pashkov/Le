@@ -56,3 +56,12 @@ class TaxationSystemsForm(forms.ModelForm):
     class Meta:
         model = TaxationSystems
         fields = ['name', 'description']
+
+
+from django import forms
+from .models import GroupsOfTypesOfWork
+
+class GroupsOfTypesOfWorkForm(forms.ModelForm):
+    class Meta:
+        model = GroupsOfTypesOfWork
+        fields = ['name', 'description']

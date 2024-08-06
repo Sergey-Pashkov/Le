@@ -67,4 +67,12 @@ urlpatterns = [
     path('taxation_systems/<int:taxation_system_id>/update/', views.update_taxation_system, name='update_taxation_system'),
     # Путь для удаления существующей налоговой системы по ID
     path('taxation_systems/<int:taxation_system_id>/delete/', views.delete_taxation_system, name='delete_taxation_system'),
+
+# URL-паттерны для модели GroupsOfTypesOfWork
+
+    path('groups/', views.groups_list, name='groups_list'),  # Путь для списка групп типов работ
+    path('groups/create/', views.create_group, name='create_group'),  # Путь для создания новой группы
+    path('groups/<int:group_id>/', views.read_group, name='read_group'),  # Путь для чтения группы
+    path('groups/<int:group_id>/update/', views.update_group, name='update_group'),  # Путь для обновления группы
+    path('groups/<int:group_id>/delete/', views.delete_group, name='delete_group'),  # Путь для удаления группы
 ]

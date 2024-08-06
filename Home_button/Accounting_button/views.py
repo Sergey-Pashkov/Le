@@ -525,3 +525,62 @@ def taxation_systems_list(request):
     """
     taxation_systems = TaxationSystems.objects.all()
     return render(request, 'Accounting_button/taxation_systems/taxation_systems_list.html', {'taxation_systems': taxation_systems})
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from .models import GroupsOfTypesOfWork
+from .forms import GroupsOfTypesOfWorkForm
+
+# Представление для создания новой группы типов работ
+@login_required
+@permission_required('Accounting_button.add_groupsoftypesofwork', raise_exception=True)
+def create_group(request):
+    if request.method == 'POST':
+        form = GroupsOfTypesOfWorkForm(request.POST)
+        if form.is_valid():
+            group = form.save(commit=False)
+            group.owner = request.user  # Устанавливаем текущего пользователя как владельца
+            group.save()
+            return redirect('Accounting_button:groups_list')  # Перенаправление на список групп после сохранения
+    else:
+        form = GroupsOfTypesOfWorkForm()
+    return render(request, 'Accounting_button/groups_of_types_of_work/group_form.html', {'form': form})
+
+# Представление для отображения деталей группы типов работ
+@login_required
+@permission_required('Accounting_button.view_groupsoftypesofwork', raise_exception=True)
+def read_group(request, group_id):
+    group = get_object_or_404(GroupsOfTypesOfWork, id=group_id)
+    return render(request, 'Accounting_button/groups_of_types_of_work/group_detail.html', {'group': group})
+
+# Представление для обновления существующей группы типов работ
+@login_required
+@permission_required('Accounting_button.change_groupsoftypesofwork', raise_exception=True)
+def update_group(request, group_id):
+    group = get_object_or_404(GroupsOfTypesOfWork, id=group_id)
+    if request.method == 'POST':
+        form = GroupsOfTypesOfWorkForm(request.POST, instance=group)
+        if form.is_valid():
+            form.save()
+            return redirect('Accounting_button:groups_list')  # Перенаправление на список групп после обновления
+    else:
+        form = GroupsOfTypesOfWorkForm(instance=group)
+    return render(request, 'Accounting_button/groups_of_types_of_work/group_form.html', {'form': form, 'group': group})
+
+# Представление для удаления существующей группы типов работ
+@login_required
+@permission_required('Accounting_button.delete_groupsoftypesofwork', raise_exception=True)
+def delete_group(request, group_id):
+    group = get_object_or_404(GroupsOfTypesOfWork, id=group_id)
+    if request.method == 'POST':
+        group.delete()
+        return redirect('Accounting_button:groups_list')  # Перенаправление на список групп после удаления
+    return render(request, 'Accounting_button/groups_of_types_of_work/group_confirm_delete.html', {'group': group})
+
+# Представление для отображения списка всех групп типов работ
+@login_required
+@permission_required('Accounting_button.view_groupsoftypesofwork', raise_exception=True)
+def groups_list(request):
+    groups = GroupsOfTypesOfWork.objects.all()
+    return render(request, 'Accounting_button/groups_of_types_of_work/groups_list.html', {'groups': groups})

@@ -1,0 +1,26 @@
+{% extends "Accounting_button/base.html" %}
+{% load permissions %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Группы видов работ</h2>
+    <div class="list-group">
+        {% for group in groups %}
+            <div class="list-group-item mb-2">
+                <h5 class="mb-1">{{ group.name }}</h5>
+                <p class="mb-1">{{ group.description }}</p>
+                {% if not user|has_group:"Исполнитель" %}
+                    <div class="d-flex flex-wrap">
+                        <a href="{% url 'Accounting_button:read_group' group.id %}" class="btn btn-secondary btn-sm mr-2 mb-2">Подробнее</a>
+                        <a href="{% url 'Accounting_button:update_group' group.id %}" class="btn btn-primary btn-sm mr-2 mb-2">Редактировать</a>
+                        <a href="{% url 'Accounting_button:delete_group' group.id %}" class="btn btn-danger btn-sm mb-2">Удалить</a>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    {% if not user|has_group:"Исполнитель" %}
+        <a href="{% url 'Accounting_button:create_group' %}" class="btn btn-success mt-4">Добавить новую группу</a>
+    {% endif %}
+</div>
+{% endblock %}

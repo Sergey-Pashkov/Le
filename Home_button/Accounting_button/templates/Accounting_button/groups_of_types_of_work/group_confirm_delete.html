@@ -1,0 +1,12 @@
+{% extends "Accounting_button/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Удалить группу "{{ group.name }}"?</h2>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Да, удалить</button>
+        <a href="{% url 'Accounting_button:read_group' group.id %}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

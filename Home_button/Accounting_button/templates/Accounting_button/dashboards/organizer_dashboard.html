@@ -1,4 +1,5 @@
 {% extends "Accounting_button/base.html" %}
+{% load permissions %}
 
 {% block content %}
 <div class="container mt-4">
@@ -6,12 +7,13 @@
     <p>Добро пожаловать, {{ user.username }}!</p>
     <!-- Контейнер с классом d-flex и flex-wrap для адаптивного расположения кнопок -->
     <div class="d-flex flex-wrap">
-        <a href="{% url 'Accounting_button:functions_list' %}" class="btn btn-primary mr-2 mb-2">Функции исполнителей</a>
-        <a href="{% url 'Accounting_button:rates_list' %}" class="btn btn-primary mr-2 mb-2">Тарифы исполнителей</a>
-        <a href="{% url 'Accounting_button:schedules_list' %}" class="btn btn-primary mr-2 mb-2">Штатное расписание</a>
-        <a href="{% url 'Accounting_button:functions_organizers_list' %}" class="btn btn-primary mr-2 mb-2">Функции организаторов</a> <!-- Кнопка для перехода к функциям организаторов -->
-        <a href="{% url 'Accounting_button:organizers_rates_list' %}" class="btn btn-primary mr-2 mb-2">Тарифы организаторов</a> <!-- Кнопка для перехода к тарифам организаторов -->
-        <a href="{% url 'Accounting_button:taxation_systems_list' %}" class="btn btn-primary mb-2">Системы налогообложения</a> <!-- Кнопка для перехода к справочнику систем налогообложения -->
+        <a href="{% url 'Accounting_button:functions_list' %}" class="btn btn-primary mx-2 mb-2">Функции исполнителей</a>
+        <a href="{% url 'Accounting_button:rates_list' %}" class="btn btn-primary mx-2 mb-2">Тарифы исполнителей</a>
+        <a href="{% url 'Accounting_button:schedules_list' %}" class="btn btn-primary mx-2 mb-2">Штатное расписание</a>
+        <a href="{% url 'Accounting_button:functions_organizers_list' %}" class="btn btn-primary mx-2 mb-2">Функции организаторов</a>
+        <a href="{% url 'Accounting_button:organizers_rates_list' %}" class="btn btn-primary mx-2 mb-2">Тарифы организаторов</a>
+        <a href="{% url 'Accounting_button:taxation_systems_list' %}" class="btn btn-primary mx-2 mb-2">Системы налогообложения</a>
+        <a href="{% url 'Accounting_button:groups_list' %}" class="btn btn-primary mx-2 mb-2">Группы видов работ</a>
     </div>
 </div>
 {% endblock %}
