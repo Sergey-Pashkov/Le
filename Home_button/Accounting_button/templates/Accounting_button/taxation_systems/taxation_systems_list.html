@@ -29,7 +29,7 @@
                 {% endfor %}
             </div>
 
-            {% if user|has_group:"Собственник" %}
+            {% if user|has_perm:"Accounting_button.add_taxationsystems" %}
                 <a href="{% url 'Accounting_button:create_taxation_system' %}" class="btn btn-success mt-4">Добавить новую систему</a>
             {% endif %}
         </div>
