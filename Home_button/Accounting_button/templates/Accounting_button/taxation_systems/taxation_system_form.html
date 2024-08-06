@@ -3,8 +3,8 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">{% if taxation_system %}Редактировать систему налогообложения{% else %}Создать новую систему налогообложения{% endif %}</h2>
-    
+    <h2 class="mb-4">{% if taxation_system %}Редактировать{% else %}Создать{% endif %}</h2>
+   
     <form method="post">
         {% csrf_token %}
         <div class="form-group">

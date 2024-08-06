@@ -6,7 +6,7 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-12">
-            <h2 class="mb-4">Налоговые системы</h2>
+            <h2 class="mb-4">Cистемы налогообложения</h2>
             <p class="lead">Добро пожаловать, {{ user.username }}!</p>
 
             <div class="list-group">
@@ -18,10 +18,10 @@
                         {% if taxation_system.id %}
                             <div class="btn-group mt-2" role="group" aria-label="TaxationSystem Actions">
                                 {% if user|has_perm:"Accounting_button.change_taxationsystems" %}
-                                    <a href="{% url 'Accounting_button:update_taxation_system' taxation_system.id %}" class="btn btn-primary btn-sm mr-2">Редактировать систему</a>
+                                    <a href="{% url 'Accounting_button:update_taxation_system' taxation_system.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
                                 {% endif %}
                                 {% if user|has_perm:"Accounting_button.delete_taxationsystems" %}
-                                    <a href="{% url 'Accounting_button:delete_taxation_system' taxation_system.id %}" class="btn btn-danger btn-sm">Удалить систему</a>
+                                    <a href="{% url 'Accounting_button:delete_taxation_system' taxation_system.id %}" class="btn btn-danger btn-sm">Удалить</a>
                                 {% endif %}
                             </div>
                         {% endif %}
@@ -30,7 +30,7 @@
             </div>
 
             {% if user|has_perm:"Accounting_button.add_taxationsystems" %}
-                <a href="{% url 'Accounting_button:create_taxation_system' %}" class="btn btn-success mt-4">Добавить новую систему</a>
+                <a href="{% url 'Accounting_button:create_taxation_system' %}" class="btn btn-success mt-4">Добавить</a>
             {% endif %}
         </div>
     </div>

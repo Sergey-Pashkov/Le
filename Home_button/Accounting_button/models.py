@@ -145,3 +145,37 @@ class GroupsOfTypesOfWork(models.Model):
 
     def __str__(self):
         return self.name
+
+
+
+
+from django.db import models
+from django.contrib.auth.models import User
+from .models import PerformersRates, GroupsOfTypesOfWork  # Импортируем модели PerformersRates и GroupsOfTypesOfWork
+
+# Определяем модель TypesOfJobs
+class TypesOfJobs(models.Model):
+    name = models.CharField(max_length=255)  # Текстовое поле для названия типа работы
+    description = models.TextField()  # Текстовое поле для описания типа работы
+    time_standard = models.PositiveIntegerField()  # Положительное целое число для стандарта времени
+
+    # Внешний ключ, связывающийся с полем name модели PerformersRates, с поведением PROTECT
+    tariff_name = models.ForeignKey(PerformersRates, on_delete=models.PROTECT, related_name='tariff_names')
+
+    # Внешний ключ, связывающийся с полем name модели GroupsOfTypesOfWork, с поведением PROTECT
+    group = models.ForeignKey(GroupsOfTypesOfWork, on_delete=models.PROTECT, related_name='types_of_jobs')
+
+    # Внешний ключ, связывающийся с моделью User, с поведением SET_NULL, измененное значение related_name для избежания конфликта
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='types_of_jobs_owners')
+
+    @property
+    def tariff(self):
+        return self.tariff_name.cost_per_minute  # Автоматически подставляет значение из поля cost_per_minute модели PerformersRates
+
+    def save(self, *args, **kwargs):
+        if not self.owner:
+            self.owner = kwargs.pop('owner', None)
+        super(TypesOfJobs, self).save(*args, **kwargs)  # Сохраняем объект
+
+    def __str__(self):
+        return self.name  # Строковое представление модели

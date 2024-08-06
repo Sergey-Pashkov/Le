@@ -68,3 +68,28 @@ from .models import GroupsOfTypesOfWork
 class GroupsOfTypesOfWorkAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'owner')
     search_fields = ('name', 'description')
+
+
+
+from django.contrib import admin
+from .models import TypesOfJobs  # Импортируем модель TypesOfJobs
+
+class TypesOfJobsAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'time_standard', 'tariff_name', 'tariff', 'group', 'owner')  # Поля, отображаемые в списке объектов в админке
+    search_fields = ('name', 'description')  # Поля, по которым будет производиться поиск в админке
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.request = request  # Сохраняем текущий запрос
+        return form
+
+    def save_model(self, request, obj, form, change):
+        if not obj.owner:
+            obj.owner = request.user  # Устанавливаем текущего пользователя как владельца
+        super().save_model(request, obj, form, change)  # Сохраняем объект
+
+    def tariff(self, obj):
+        return obj.tariff  # Вычисляемое поле для отображения тарифа
+    tariff.short_description = 'Tariff (cost per minute)'  # Короткое описание поля
+
+admin.site.register(TypesOfJobs, TypesOfJobsAdmin)
