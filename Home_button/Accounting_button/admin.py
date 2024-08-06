@@ -57,3 +57,14 @@ from .models import TaxationSystems
 class TaxationSystemsAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'owner')
     search_fields = ('name', 'description')
+
+
+# admin.py
+
+from django.contrib import admin
+from .models import GroupsOfTypesOfWork
+
+@admin.register(GroupsOfTypesOfWork)
+class GroupsOfTypesOfWorkAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'owner')
+    search_fields = ('name', 'description')

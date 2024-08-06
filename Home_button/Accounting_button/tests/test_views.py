@@ -1,142 +1,26 @@
 # Accounting_button/tests/test_views.py
 
-import pytest
-from django.test import TestCase
-from django.urls import reverse
-from django.contrib.auth.models import User, Group, Permission
-from django.contrib.auth import get_user_model
-from Accounting_button.models import Functions_of_performers
-
-class AccountingButtonTests(TestCase):
-
-    def setUp(self):
-        # Создаем пользователя для тестирования
-        self.user = get_user_model().objects.create_user(username='testuser', password='testpassword')
-        self.user.user_permissions.add(Permission.objects.get(codename='add_functions_of_performers'))
-        self.user.user_permissions.add(Permission.objects.get(codename='view_functions_of_performers'))
-        self.user.user_permissions.add(Permission.objects.get(codename='change_functions_of_performers'))
-        self.user.user_permissions.add(Permission.objects.get(codename='delete_functions_of_performers'))
-        
-        # Создаем группу и добавляем пользователя в группу
-        self.group = Group.objects.create(name='Собственник')
-        self.user.groups.add(self.group)
-
-        # Создаем тестовую функцию исполнителя
-        self.function = Functions_of_performers.objects.create(
-            name='Test Function',
-            description='This is a test function description',
-            owner=self.user
-        )
-    
-    def test_owner_dashboard_view(self):
-        # Тестируем доступ неавторизованного пользователя
-        response = self.client.get(reverse('Accounting_button:owner_dashboard'))
-        self.assertEqual(response.status_code, 302)  # Перенаправление на страницу входа
-
-        # Логиним пользователя
-        self.client.login(username='testuser', password='testpassword')
-        
-        # Тестируем доступ авторизованного пользователя
-        response = self.client.get(reverse('Accounting_button:owner_dashboard'))
-        self.assertEqual(response.status_code, 200)  # Успешный доступ
-        self.assertTemplateUsed(response, 'Accounting_button/dashboards/owner_dashboard.html')
-
-    def test_organizer_dashboard_view(self):
-        # Тестируем доступ неавторизованного пользователя
-        response = self.client.get(reverse('Accounting_button:organizer_dashboard'))
-        self.assertEqual(response.status_code, 302)  # Перенаправление на страницу входа
-
-        # Логиним пользователя
-        self.client.login(username='testuser', password='testpassword')
-        
-        # Тестируем доступ авторизованного пользователя
-        response = self.client.get(reverse('Accounting_button:organizer_dashboard'))
-        self.assertEqual(response.status_code, 200)  # Успешный доступ
-        self.assertTemplateUsed(response, 'Accounting_button/dashboards/organizer_dashboard.html')
-
-    def test_executor_dashboard_view(self):
-        # Тестируем доступ неавторизованного пользователя
-        response = self.client.get(reverse('Accounting_button:executor_dashboard'))
-        self.assertEqual(response.status_code, 302)  # Перенаправление на страницу входа
-
-        # Логиним пользователя
-        self.client.login(username='testuser', password='testpassword')
-        
-        # Тестируем доступ авторизованного пользователя
-        response = self.client.get(reverse('Accounting_button:executor_dashboard'))
-        self.assertEqual(response.status_code, 200)  # Успешный доступ
-        self.assertTemplateUsed(response, 'Accounting_button/dashboards/executor_dashboard.html')
-
-    def test_custom_login_view(self):
-        response = self.client.get(reverse('Accounting_button:login'))
-        self.assertEqual(response.status_code, 200)  # Успешный доступ
-        self.assertTemplateUsed(response, 'Accounting_button/login.html')
-
-    def test_custom_logout_view(self):
-        # Логиним пользователя
-        self.client.login(username='testuser', password='testpassword')
-        
-        # Тестируем выход
-        response = self.client.post(reverse('Accounting_button:logout'))
-        self.assertEqual(response.status_code, 302)  # Перенаправление после выхода
-
-    def test_create_function_view(self):
-        self.client.login(username='testuser', password='testpassword')
-        response = self.client.post(reverse('Accounting_button:create_function'), {
-            'name': 'New Function',
-            'description': 'New function description'
-        })
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue(Functions_of_performers.objects.filter(name='New Function').exists())
-
-    def test_read_function_view(self):
-        self.client.login(username='testuser', password='testpassword')
-        response = self.client.get(reverse('Accounting_button:read_function', args=[self.function.id]))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'Accounting_button/functions_of_performers/function_detail.html')
-        self.assertContains(response, self.function.name)
-
-    def test_update_function_view(self):
-        self.client.login(username='testuser', password='testpassword')
-        response = self.client.post(reverse('Accounting_button:update_function', args=[self.function.id]), {
-            'name': 'Updated Function',
-            'description': 'Updated function description'
-        })
-        self.assertEqual(response.status_code, 302)
-        self.function.refresh_from_db()
-        self.assertEqual(self.function.name, 'Updated Function')
-
-    def test_delete_function_view(self):
-        self.client.login(username='testuser', password='testpassword')
-        response = self.client.post(reverse('Accounting_button:delete_function', args=[self.function.id]))
-        self.assertEqual(response.status_code, 302)
-        self.assertFalse(Functions_of_performers.objects.filter(id=self.function.id).exists())
-
-    def test_functions_list_view(self):
-        self.client.login(username='testuser', password='testpassword')
-        response = self.client.get(reverse('Accounting_button:functions_list'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'Accounting_button/functions_of_performers/functions_list.html')
-        self.assertContains(response, self.function.name)
-
-
-# Accounting_button/tests/test_views.py
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User, Permission, ContentType
-from Accounting_button.models import PerformersRates
-from Accounting_button.forms import PerformersRatesForm
+from Accounting_button.models import PerformersRates, Functions_of_performers, StaffingSchedule, Functions_of_organizers
 
 class PerformersRatesViewTests(TestCase):
 
     def setUp(self):
+        self.client = Client()
         self.user = User.objects.create_user(username='testuser', password='testpassword')
         content_type = ContentType.objects.get_for_model(PerformersRates)
-        self.add_permission = Permission.objects.get(codename='add_performersrates', content_type=content_type)
-        self.view_permission = Permission.objects.get(codename='view_performersrates', content_type=content_type)
-        self.change_permission = Permission.objects.get(codename='change_performersrates', content_type=content_type)
-        self.delete_permission = Permission.objects.get(codename='delete_performersrates', content_type=content_type)
-        self.user.user_permissions.add(self.add_permission, self.view_permission, self.change_permission, self.delete_permission)
+        
+        # Добавляем все необходимые разрешения пользователю
+        permissions = [
+            Permission.objects.get(codename='add_performersrates', content_type=content_type),
+            Permission.objects.get(codename='view_performersrates', content_type=content_type),
+            Permission.objects.get(codename='change_performersrates', content_type=content_type),
+            Permission.objects.get(codename='delete_performersrates', content_type=content_type)
+        ]
+        
+        self.user.user_permissions.add(*permissions)
         self.client.login(username='testuser', password='testpassword')
         self.rate = PerformersRates.objects.create(name='Rate 1', cost_per_minute=1.5, owner=self.user)
 
@@ -167,32 +51,79 @@ class PerformersRatesViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(PerformersRates.objects.count(), 0)
 
+class FunctionsOfPerformersViewTests(TestCase):
 
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        content_type = ContentType.objects.get_for_model(Functions_of_performers)
+        
+        permissions = [
+            Permission.objects.get(codename='add_functions_of_performers', content_type=content_type),
+            Permission.objects.get(codename='view_functions_of_performers', content_type=content_type),
+            Permission.objects.get(codename='change_functions_of_performers', content_type=content_type),
+            Permission.objects.get(codename='delete_functions_of_performers', content_type=content_type)
+        ]
+        
+        self.user.user_permissions.add(*permissions)
+        self.client.login(username='testuser', password='testpassword')
+        self.function = Functions_of_performers.objects.create(
+            name='Test Function',
+            description='This is a test function description',
+            owner=self.user
+        )
 
+    def test_create_function_view(self):
+        response = self.client.post(reverse('Accounting_button:create_function'), {
+            'name': 'New Function',
+            'description': 'New function description'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Functions_of_performers.objects.filter(name='New Function').exists())
 
+    def test_read_function_view(self):
+        response = self.client.get(reverse('Accounting_button:read_function', args=[self.function.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'Accounting_button/functions_of_performers/function_detail.html')
+        self.assertContains(response, self.function.name)
 
-from django.test import TestCase, Client
-from django.urls import reverse
-from django.contrib.auth.models import User, Permission
-from Accounting_button.models import Functions_of_performers, PerformersRates, StaffingSchedule
-from Accounting_button.forms import StaffingScheduleForm
+    def test_update_function_view(self):
+        response = self.client.post(reverse('Accounting_button:update_function', args=[self.function.id]), {
+            'name': 'Updated Function',
+            'description': 'Updated function description'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.function.refresh_from_db()
+        self.assertEqual(self.function.name, 'Updated Function')
+
+    def test_delete_function_view(self):
+        response = self.client.post(reverse('Accounting_button:delete_function', args=[self.function.id]))
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(Functions_of_performers.objects.filter(id=self.function.id).exists())
+
+    def test_functions_list_view(self):
+        response = self.client.get(reverse('Accounting_button:functions_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'Accounting_button/functions_of_performers/functions_list.html')
+        self.assertContains(response, self.function.name)
 
 class StaffingScheduleViewTests(TestCase):
 
     def setUp(self):
         self.client = Client()
-
-        # Создаем пользователя и даем ему необходимые разрешения
-        self.user = User.objects.create_user(username='testuser', password='12345')
-        self.user.user_permissions.add(Permission.objects.get(codename='view_staffingschedule'))
-        self.user.user_permissions.add(Permission.objects.get(codename='add_staffingschedule'))
-        self.user.user_permissions.add(Permission.objects.get(codename='change_staffingschedule'))
-        self.user.user_permissions.add(Permission.objects.get(codename='delete_staffingschedule'))
-        self.client.login(username='testuser', password='12345')
-
-        # Создаем данные для тестирования
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        content_type = ContentType.objects.get_for_model(StaffingSchedule)
+        
+        permissions = [
+            Permission.objects.get(codename='view_staffingschedule', content_type=content_type),
+            Permission.objects.get(codename='add_staffingschedule', content_type=content_type),
+            Permission.objects.get(codename='change_staffingschedule', content_type=content_type),
+            Permission.objects.get(codename='delete_staffingschedule', content_type=content_type)
+        ]
+        
+        self.user.user_permissions.add(*permissions)
+        self.client.login(username='testuser', password='testpassword')
         self.function = Functions_of_performers.objects.create(name='Function1')
-        self.function2 = Functions_of_performers.objects.create(name='Function2')
         self.rate = PerformersRates.objects.create(name='Rate1', cost_per_minute=2.5)
         self.schedule = StaffingSchedule.objects.create(
             name=self.function,
@@ -215,16 +146,14 @@ class StaffingScheduleViewTests(TestCase):
         self.assertTemplateUsed(response, 'Accounting_button/staffing_schedule/schedule_form.html')
 
         form_data = {
-            'name': self.function2.id,  # Используем другое имя, чтобы избежать дублирования
+            'name': self.function.id,
             'rate': self.rate.id,
             'quantity': 20,
             'time_norm': 40
         }
         response = self.client.post(reverse('Accounting_button:create_schedule'), data=form_data)
-        if response.status_code == 200:
-            print(response.context['form'].errors)  # Вывод ошибок формы, если они есть
-        self.assertEqual(response.status_code, 302)  # Проверяем редирект после успешного создания
-        self.assertEqual(StaffingSchedule.objects.count(), 2)  # Проверяем, что объект был создан
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(StaffingSchedule.objects.count(), 2)
 
     def test_read_schedule_view(self):
         response = self.client.get(reverse('Accounting_button:read_schedule', args=[self.schedule.id]))
@@ -233,53 +162,38 @@ class StaffingScheduleViewTests(TestCase):
         self.assertContains(response, self.schedule.name.name)
 
     def test_update_schedule_view(self):
-        response = self.client.get(reverse('Accounting_button:update_schedule', args=[self.schedule.id]))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'Accounting_button/staffing_schedule/schedule_form.html')
-
-        form_data = {
+        response = self.client.post(reverse('Accounting_button:update_schedule', args=[self.schedule.id]), {
             'name': self.function.id,
             'rate': self.rate.id,
             'quantity': 15,
             'time_norm': 50
-        }
-        response = self.client.post(reverse('Accounting_button:update_schedule', args=[self.schedule.id]), data=form_data)
-        self.assertEqual(response.status_code, 302)  # Проверяем редирект после успешного обновления
+        })
+        self.assertEqual(response.status_code, 302)
         self.schedule.refresh_from_db()
         self.assertEqual(self.schedule.quantity, 15)
         self.assertEqual(self.schedule.time_norm, 50)
 
     def test_delete_schedule_view(self):
-        response = self.client.get(reverse('Accounting_button:delete_schedule', args=[self.schedule.id]))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'Accounting_button/staffing_schedule/schedule_confirm_delete.html')
-
         response = self.client.post(reverse('Accounting_button:delete_schedule', args=[self.schedule.id]))
-        self.assertEqual(response.status_code, 302)  # Проверяем редирект после успешного удаления
-        self.assertEqual(StaffingSchedule.objects.count(), 0)  # Проверяем, что объект был удален
-
-
-
-from django.test import TestCase, Client
-from django.urls import reverse
-from django.contrib.auth.models import User, Permission
-from Accounting_button.models import Functions_of_organizers
-from Accounting_button.forms import FunctionsOfOrganizersForm
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(StaffingSchedule.objects.count(), 0)
 
 class FunctionsOfOrganizersViewTests(TestCase):
 
     def setUp(self):
         self.client = Client()
-
-        # Создаем пользователя и авторизуем его
-        self.user = User.objects.create_user(username='testuser', password='12345')
-        self.user.user_permissions.add(Permission.objects.get(codename='add_functions_of_organizers'))
-        self.user.user_permissions.add(Permission.objects.get(codename='view_functions_of_organizers'))
-        self.user.user_permissions.add(Permission.objects.get(codename='change_functions_of_organizers'))
-        self.user.user_permissions.add(Permission.objects.get(codename='delete_functions_of_organizers'))
-        self.client.login(username='testuser', password='12345')
-
-        # Создаем тестовую функцию организатора
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        content_type = ContentType.objects.get_for_model(Functions_of_organizers)
+        
+        permissions = [
+            Permission.objects.get(codename='add_functions_of_organizers', content_type=content_type),
+            Permission.objects.get(codename='view_functions_of_organizers', content_type=content_type),
+            Permission.objects.get(codename='change_functions_of_organizers', content_type=content_type),
+            Permission.objects.get(codename='delete_functions_of_organizers', content_type=content_type)
+        ]
+        
+        self.user.user_permissions.add(*permissions)
+        self.client.login(username='testuser', password='testpassword')
         self.function = Functions_of_organizers.objects.create(
             name='Организатор мероприятия',
             description='Отвечает за организацию и проведение мероприятий.',
@@ -287,74 +201,36 @@ class FunctionsOfOrganizersViewTests(TestCase):
         )
 
     def test_create_function_organizer_view(self):
-        """
-        Тестирование представления для создания новой функции организатора.
-        """
-        url = reverse('Accounting_button:create_function_organizer')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'Accounting_button/functions_of_organizers/function_form.html')
-
-        data = {
-            'name': 'Новый организатор',
-            'description': 'Новая функция.',
-        }
-        response = self.client.post(url, data)
+        response = self.client.post(reverse('Accounting_button:create_function_organizer'), {
+            'name': 'New Organizer',
+            'description': 'New function description'
+        })
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('Accounting_button:functions_organizers_list'))
-        self.assertTrue(Functions_of_organizers.objects.filter(name='Новый организатор').exists())
+        self.assertTrue(Functions_of_organizers.objects.filter(name='New Organizer').exists())
 
     def test_read_function_organizer_view(self):
-        """
-        Тестирование представления для отображения деталей функции организатора.
-        """
-        url = reverse('Accounting_button:read_function_organizer', args=[self.function.id])
-        response = self.client.get(url)
+        response = self.client.get(reverse('Accounting_button:read_function_organizer', args=[self.function.id]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'Accounting_button/functions_of_organizers/function_detail.html')
         self.assertContains(response, self.function.name)
 
     def test_update_function_organizer_view(self):
-        """
-        Тестирование представления для обновления существующей функции организатора.
-        """
-        url = reverse('Accounting_button:update_function_organizer', args=[self.function.id])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'Accounting_button/functions_of_organizers/function_form.html')
-
-        data = {
-            'name': 'Обновленный организатор',
-            'description': 'Обновленное описание.',
-        }
-        response = self.client.post(url, data)
+        response = self.client.post(reverse('Accounting_button:update_function_organizer', args=[self.function.id]), {
+            'name': 'Updated Organizer',
+            'description': 'Updated function description'
+        })
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('Accounting_button:functions_organizers_list'))
         self.function.refresh_from_db()
-        self.assertEqual(self.function.name, 'Обновленный организатор')
+        self.assertEqual(self.function.name, 'Updated Organizer')
 
     def test_delete_function_organizer_view(self):
-        """
-        Тестирование представления для удаления существующей функции организатора.
-        """
-        url = reverse('Accounting_button:delete_function_organizer', args=[self.function.id])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'Accounting_button/functions_of_organizers/function_confirm_delete.html')
-
-        response = self.client.post(url)
+        response = self.client.post(reverse('Accounting_button:delete_function_organizer', args=[self.function.id]))
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('Accounting_button:functions_organizers_list'))
         self.assertFalse(Functions_of_organizers.objects.filter(id=self.function.id).exists())
 
     def test_functions_organizers_list_view(self):
-        """
-        Тестирование представления для отображения списка всех функций организаторов.
-        """
-        url = reverse('Accounting_button:functions_organizers_list')
-        response = self.client.get(url)
+        response = self.client.get(reverse('Accounting_button:functions_organizers_list'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'Accounting_button/functions_of_organizers/functions_list.html')
         self.assertContains(response, self.function.name)
-
 

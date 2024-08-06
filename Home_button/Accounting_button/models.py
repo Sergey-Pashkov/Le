@@ -131,3 +131,17 @@ class TaxationSystems(models.Model):
 
     def __str__(self):
         return self.name  # Возвращает название налоговой системы при преобразовании объекта в строку
+
+
+# models.py
+
+from django.db import models
+from django.contrib.auth.models import User
+
+class GroupsOfTypesOfWork(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='groups_of_types_of_work')
+
+    def __str__(self):
+        return self.name

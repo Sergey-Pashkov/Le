@@ -192,3 +192,33 @@ class TaxationSystemsModelTest(TestCase):
         )
         # Проверяем, что метод __str__ возвращает правильное значение
         self.assertEqual(str(taxation_system), 'General Taxation System')
+
+
+# tests.py
+# Accounting_button/tests/test_models.py
+
+from django.test import TestCase
+from django.contrib.auth.models import User
+from Accounting_button.models import GroupsOfTypesOfWork  # Измените путь здесь
+
+class GroupsOfTypesOfWorkTestCase(TestCase):
+    def setUp(self):
+        # Создаем пользователя
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        
+        # Создаем объект модели GroupsOfTypesOfWork
+        self.group = GroupsOfTypesOfWork.objects.create(
+            name='Test Group',
+            description='This is a test description',
+            owner=self.user
+        )
+
+    def test_group_creation(self):
+        # Проверяем, что объект группы был создан правильно
+        self.assertEqual(self.group.name, 'Test Group')
+        self.assertEqual(self.group.description, 'This is a test description')
+        self.assertEqual(self.group.owner, self.user)
+
+    def test_group_str_method(self):
+        # Проверяем, что метод __str__ возвращает правильное значение
+        self.assertEqual(str(self.group), 'Test Group')
