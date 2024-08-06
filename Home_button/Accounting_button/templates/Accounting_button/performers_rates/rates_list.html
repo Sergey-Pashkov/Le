@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-12">
             <h2 class="mb-4">Тарифы исполнителей</h2>
-            <p class="lead">Добро пожаловать, {{ user.username }}!</p> <!-- Приветствие пользователя -->
+            <p class="lead">Добро пожаловать, {{ user.username }}!</p>
 
             <div class="list-group">
                 {% for rate in rates %}
@@ -18,10 +18,10 @@
                         {% if rate.id %}
                             <div class="btn-group" role="group" aria-label="Rate Actions">
                                 {% if perms.Accounting_button.change_performersrates %}
-                                    <a href="{% url 'Accounting_button:update_rate' rate.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
+                                    <a href="{% url 'Accounting_button:update_performers_rate' rate.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
                                 {% endif %}
                                 {% if perms.Accounting_button.delete_performersrates %}
-                                    <a href="{% url 'Accounting_button:delete_rate' rate.id %}" class="btn btn-danger btn-sm mr-2">Удалить</a>
+                                    <a href="{% url 'Accounting_button:delete_performers_rate' rate.id %}" class="btn btn-danger btn-sm mr-2">Удалить</a>
                                 {% endif %}
                             </div>
                         {% endif %}
@@ -30,7 +30,7 @@
             </div>
 
             {% if perms.Accounting_button.add_performersrates %}
-                <a href="{% url 'Accounting_button:create_rate' %}" class="btn btn-success mt-4">Добавить новый тариф</a>
+                <a href="{% url 'Accounting_button:create_performers_rate' %}" class="btn btn-success mt-4">Добавить новый тариф</a>
             {% endif %}
         </div>
     </div>

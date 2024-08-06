@@ -1,3 +1,4 @@
+<!-- Accounting_button/templates/Accounting_button/organizers_rates/rates_list.html -->
 {% extends "Accounting_button/base.html" %}
 {% load permissions %}
 
@@ -15,10 +16,10 @@
                 {% if rate.id %}
                     <div class="btn-group" role="group" aria-label="Rate Actions">
                         {% if user|has_perm:"Accounting_button.change_organizersrates" %}
-                            <a href="{% url 'Accounting_button:update_rate' rate.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
+                            <a href="{% url 'Accounting_button:update_organizers_rate' rate.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
                         {% endif %}
                         {% if user|has_perm:"Accounting_button.delete_organizersrates" %}
-                            <a href="{% url 'Accounting_button:delete_rate' rate.id %}" class="btn btn-danger btn-sm mr-2">Удалить</a>
+                            <a href="{% url 'Accounting_button:delete_organizers_rate' rate.id %}" class="btn btn-danger btn-sm mr-2">Удалить</a>
                         {% endif %}
                     </div>
                 {% endif %}
@@ -27,7 +28,7 @@
     </div>
 
     {% if user|has_group:"Собственник" %}
-        <a href="{% url 'Accounting_button:create_rate' %}" class="btn btn-success mt-4">Добавить</a>
+        <a href="{% url 'Accounting_button:create_organizers_rate' %}" class="btn btn-success mt-4">Добавить</a>
     {% endif %}
 </div>
 {% endblock %}

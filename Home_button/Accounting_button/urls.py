@@ -19,12 +19,6 @@ urlpatterns = [
     path('functions/<int:function_id>/update/', views.update_function, name='update_function'),
     path('functions/<int:function_id>/delete/', views.delete_function, name='delete_function'),
 
-    path('rates/', views.rates_list, name='rates_list'),  # Путь для списка тарифов
-    path('rates/create/', views.create_rate, name='create_rate'),  # Путь для создания тарифа
-    path('rates/<int:rate_id>/', views.read_rate, name='read_rate'),  # Путь для отображения деталей тарифа
-    path('rates/<int:rate_id>/update/', views.update_rate, name='update_rate'),  # Путь для обновления тарифа
-    path('rates/<int:rate_id>/delete/', views.delete_rate, name='delete_rate'),  # Путь для удаления тарифа
-
     # Пути для управления расписаниями штата
     path('schedules/', views.schedules_list, name='schedules_list'),  # Путь для просмотра списка расписаний
     path('schedules/create/', views.create_schedule, name='create_schedule'),  # Путь для создания нового расписания
@@ -48,12 +42,6 @@ urlpatterns = [
     path('functions/organizers/<int:function_id>/delete/', views.delete_function_organizer, name='delete_function_organizer'),
 
 
-    # Пути для управления ставками организаторов
-    path('organizers_rates/', views.organizers_rates_list, name='organizers_rates_list'),  # Путь для просмотра списка ставок
-    path('organizers_rates/create/', views.create_rate, name='create_rate'),  # Путь для создания новой ставки
-    path('organizers_rates/<int:rate_id>/', views.read_rate, name='read_rate'),  # Путь для просмотра деталей ставки
-    path('organizers_rates/<int:rate_id>/update/', views.update_rate, name='update_rate'),  # Путь для обновления ставки
-    path('organizers_rates/<int:rate_id>/delete/', views.delete_rate, name='delete_rate'),  # Путь для удаления ставки
 
 # Пути, относящиеся к модели TaxationSystems
 
@@ -86,4 +74,19 @@ urlpatterns = [
     path('types_of_jobs/<int:type_of_job_id>/update/', views.update_type_of_job, name='update_type_of_job'),
     # Путь для удаления существующего типа работы по ID
     path('types_of_jobs/<int:type_of_job_id>/delete/', views.delete_type_of_job, name='delete_type_of_job'),
+
+
+    # Пути для тарифов исполнителей
+    path('rates/', views.rates_list, name='rates_list'),
+    path('rates/create/', views.create_performers_rate, name='create_performers_rate'),
+    path('rates/<int:rate_id>/', views.read_performers_rate, name='read_performers_rate'),
+    path('rates/<int:rate_id>/update/', views.update_performers_rate, name='update_performers_rate'),
+    path('rates/<int:rate_id>/delete/', views.delete_performers_rate, name='delete_performers_rate'),
+
+    # Пути для ставок организаторов
+    path('organizers_rates/', views.organizers_rates_list, name='organizers_rates_list'),
+    path('organizers_rates/create/', views.create_organizers_rate, name='create_organizers_rate'),
+    path('organizers_rates/<int:rate_id>/', views.read_organizers_rate, name='read_organizers_rate'),
+    path('organizers_rates/<int:rate_id>/update/', views.update_organizers_rate, name='update_organizers_rate'),
+    path('organizers_rates/<int:rate_id>/delete/', views.delete_organizers_rate, name='delete_organizers_rate'),
 ]

@@ -7,10 +7,10 @@
     <p>Стоимость за минуту: {{ rate.cost_per_minute }}</p>
 
     {% if perms.Accounting_button.change_performersrates %} 
-        <a href="{% url 'Accounting_button:update_rate' rate.id %}" class="btn btn-primary">Редактировать</a>
+        <a href="{% url 'Accounting_button:update_performers_rate' rate.id %}" class="btn btn-primary">Редактировать</a>
     {% endif %}
     {% if perms.Accounting_button.delete_performersrates %}
-        <a href="{% url 'Accounting_button:delete_rate' rate.id %}" class="btn btn-danger">Удалить</a>
+        <a href="{% url 'Accounting_button:delete_performers_rate' rate.id %}" class="btn btn-danger">Удалить</a>
     {% endif %}
 </div>
 {% endblock %}

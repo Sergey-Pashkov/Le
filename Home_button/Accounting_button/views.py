@@ -120,78 +120,9 @@ def functions_list(request):
     return render(request, 'Accounting_button/functions_of_performers/functions_list.html', {'functions': functions})
 
 
-# Accounting_button/views.py
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required, permission_required
-from .models import PerformersRates
-from .forms import PerformersRatesForm
 
-# Представление для создания нового тарифа
-@login_required
-@permission_required('Accounting_button.add_performersrates', raise_exception=True)
-def create_rate(request):
-    if request.method == 'POST':
-        form = PerformersRatesForm(request.POST)  # Создаем форму с данными из запроса
-        if form.is_valid():
-            rate = form.save(commit=False)
-            rate.owner = request.user  # Устанавливаем текущего пользователя как владельца
-            rate.save()  # Сохраняем тариф
-            return redirect('Accounting_button:rates_list')  # Перенаправляем на список тарифов
-    else:
-        form = PerformersRatesForm()  # Пустая форма для GET-запроса
-    return render(request, 'Accounting_button/performers_rates/rate_form.html', {'form': form})
 
-# Представление для отображения деталей тарифа
-@login_required
-@permission_required('Accounting_button.view_performersrates', raise_exception=True)
-def read_rate(request, rate_id):
-    rate = get_object_or_404(PerformersRates, id=rate_id)  # Получаем тариф или возвращаем 404
-    return render(request, 'Accounting_button/performers_rates/rate_detail.html', {'rate': rate})
 
-# Представление для обновления существующего тарифа
-@login_required
-@permission_required('Accounting_button.change_performersrates', raise_exception=True)
-def update_rate(request, rate_id):
-    rate = get_object_or_404(PerformersRates, id=rate_id)  # Получаем тариф или возвращаем 404
-    if request.method == 'POST':
-        form = PerformersRatesForm(request.POST, instance=rate)  # Создаем форму с данными из запроса и экземпляром тарифа
-        if form.is_valid():
-            form.save()  # Сохраняем изменения
-            return redirect('Accounting_button:rates_list')  # Перенаправляем на список тарифов
-    else:
-        form = PerformersRatesForm(instance=rate)  # Форма с данными тарифа для GET-запроса
-    return render(request, 'Accounting_button/performers_rates/rate_form.html', {'form': form, 'rate': rate})
-
-# Представление для удаления существующего тарифа
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required, permission_required
-from django.db.models import ProtectedError
-from .models import PerformersRates
-
-@login_required
-@permission_required('Accounting_button.delete_performersrates', raise_exception=True)
-def delete_rate(request, rate_id):
-    """
-    Представление для удаления существующего тарифа исполнителя.
-    Доступно только авторизованным пользователям с правом удаления тарифов исполнителей.
-    """
-    rate = get_object_or_404(PerformersRates, id=rate_id)
-    if request.method == 'POST':
-        try:
-            rate.delete()
-            messages.success(request, 'Тариф успешно удален.')
-        except ProtectedError:
-            messages.error(request, 'Невозможно удалить этот тариф, так как он связан с расписанием штатного расписания.', extra_tags='alert-danger')
-        return redirect('Accounting_button:rates_list')
-    return render(request, 'Accounting_button/performers_rates/rate_confirm_delete.html', {'rate': rate})
-
-# Представление для отображения списка всех тарифов исполнителей
-@login_required
-@permission_required('Accounting_button.view_performersrates', raise_exception=True)
-def rates_list(request):
-    rates = PerformersRates.objects.all()  # Получаем все тарифы из базы данных
-    return render(request, 'Accounting_button/performers_rates/rates_list.html', {'rates': rates})
 
 
 
@@ -375,86 +306,13 @@ def functions_organizers_list(request):
 
 
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib import messages
-from django.db.models import ProtectedError
-from .models import OrganizersRates
-from .forms import OrganizersRatesForm
 
-@login_required
-@permission_required('Accounting_button.add_organizersrates', raise_exception=True)
-def create_rate(request):
-    """
-    Представление для создания новой ставки организатора.
-    Доступно только авторизованным пользователям с правом добавления ставок.
-    """
-    if request.method == 'POST':
-        form = OrganizersRatesForm(request.POST)
-        if form.is_valid():
-            rate = form.save(commit=False)
-            rate.owner = request.user  # Устанавливаем текущего пользователя как владельца
-            rate.save()
-            return redirect('Accounting_button:organizers_rates_list')
-    else:
-        form = OrganizersRatesForm()
-    return render(request, 'Accounting_button/organizers_rates/rate_form.html', {'form': form})
 
-@login_required
-@permission_required('Accounting_button.view_organizersrates', raise_exception=True)
-def read_rate(request, rate_id):
-    """
-    Представление для отображения деталей ставки организатора.
-    Доступно только авторизованным пользователям с правом просмотра ставок.
-    """
-    rate = get_object_or_404(OrganizersRates, id=rate_id)
-    return render(request, 'Accounting_button/organizers_rates/rate_detail.html', {'rate': rate})
 
-@login_required
-@permission_required('Accounting_button.change_organizersrates', raise_exception=True)
-def update_rate(request, rate_id):
-    """
-    Представление для обновления существующей ставки организатора.
-    Доступно только авторизованным пользователям с правом изменения ставок.
-    """
-    rate = get_object_or_404(OrganizersRates, id=rate_id)
-    if request.method == 'POST':
-        form = OrganizersRatesForm(request.POST, instance=rate)
-        if form.is_valid():
-            form.save()
-            return redirect('Accounting_button:organizers_rates_list')
-    else:
-        form = OrganizersRatesForm(instance=rate)
-    return render(request, 'Accounting_button/organizers_rates/rate_form.html', {'form': form, 'rate': rate})
 
-@login_required
-@permission_required('Accounting_button.delete_organizersrates', raise_exception=True)
-def delete_rate(request, rate_id):
-    """
-    Представление для удаления существующей ставки организатора.
-    Доступно только авторизованным пользователям с правом удаления ставок.
-    """
-    rate = get_object_or_404(OrganizersRates, id=rate_id)
-    
-    if request.method == 'POST':
-        try:
-            rate.delete()
-            messages.success(request, 'Ставка успешно удалена.')
-        except ProtectedError:
-            messages.error(request, 'Невозможно удалить эту ставку, так как она связана с другим объектом.', extra_tags='alert-danger')
-        return redirect('Accounting_button:organizers_rates_list')
-    
-    return render(request, 'Accounting_button/organizers_rates/rate_confirm_delete.html', {'rate': rate})
 
-@login_required
-@permission_required('Accounting_button.view_organizersrates', raise_exception=True)
-def organizers_rates_list(request):
-    """
-    Представление для отображения списка всех ставок организаторов.
-    Доступно только авторизованным пользователям с правом просмотра ставок.
-    """
-    rates = OrganizersRates.objects.all()
-    return render(request, 'Accounting_button/organizers_rates/rates_list.html', {'rates': rates})
+
+
 
 
 # views.py
@@ -709,3 +567,140 @@ def types_of_jobs_list(request):
     groups = GroupsOfTypesOfWork.objects.all().order_by('name')
     grouped_jobs = {group: TypesOfJobs.objects.filter(group=group).order_by('name') for group in groups}
     return render(request, 'Accounting_button/types_of_jobs/types_of_jobs_list.html', {'grouped_jobs': grouped_jobs})
+
+
+# Accounting_button/views.py
+# Accounting_button/views.py
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib import messages
+from django.db.models import ProtectedError
+from .models import PerformersRates, OrganizersRates
+from .forms import PerformersRatesForm, OrganizersRatesForm
+
+# Представления для тарифов исполнителей
+@login_required
+@permission_required('Accounting_button.add_performersrates', raise_exception=True)
+def create_performers_rate(request):
+    if request.method == 'POST':
+        form = PerformersRatesForm(request.POST)
+        if form.is_valid():
+            rate = form.save(commit=False)
+            rate.owner = request.user
+            rate.save()
+            return redirect('Accounting_button:rates_list')
+    else:
+        form = PerformersRatesForm()
+    return render(request, 'Accounting_button/performers_rates/rate_form.html', {'form': form})
+
+@login_required
+@permission_required('Accounting_button.view_performersrates', raise_exception=True)
+def read_performers_rate(request, rate_id):
+    rate = get_object_or_404(PerformersRates, id=rate_id)
+    return render(request, 'Accounting_button/performers_rates/rate_detail.html', {'rate': rate})
+
+@login_required
+@permission_required('Accounting_button.change_performersrates', raise_exception=True)
+def update_performers_rate(request, rate_id):
+    rate = get_object_or_404(PerformersRates, id=rate_id)
+    if request.method == 'POST':
+        form = PerformersRatesForm(request.POST, instance=rate)
+        if form.is_valid():
+            form.save()
+            return redirect('Accounting_button:rates_list')
+    else:
+        form = PerformersRatesForm(instance=rate)
+    return render(request, 'Accounting_button/performers_rates/rate_form.html', {'form': form, 'rate': rate})
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib import messages
+from django.db.models import ProtectedError
+from .models import PerformersRates
+
+@login_required
+@permission_required('Accounting_button.delete_performersrates', raise_exception=True)
+def delete_performers_rate(request, rate_id):
+    """
+    Представление для удаления существующего тарифа исполнителя.
+    Доступно только авторизованным пользователям с правом удаления тарифов исполнителей.
+    """
+    rate = get_object_or_404(PerformersRates, id=rate_id)
+    if request.method == 'POST':
+        try:
+            rate.delete()
+            messages.success(request, 'Тариф успешно удален.')
+        except ProtectedError as e:
+            # Получаем связанные модели из исключения
+            related_objects = e.protected_objects
+            related_model_names = ', '.join(set(obj._meta.verbose_name for obj in related_objects))
+            messages.error(
+                request, 
+                f'Невозможно удалить этот тариф, так как он связан с записями в следующих моделях: {related_model_names}.',
+                extra_tags='alert-danger'
+            )
+        return redirect('Accounting_button:rates_list')
+    return render(request, 'Accounting_button/performers_rates/rate_confirm_delete.html', {'rate': rate})
+
+
+
+
+@login_required
+@permission_required('Accounting_button.view_performersrates', raise_exception=True)
+def rates_list(request):
+    rates = PerformersRates.objects.all()
+    return render(request, 'Accounting_button/performers_rates/rates_list.html', {'rates': rates})
+
+# Представления для ставок организаторов
+@login_required
+@permission_required('Accounting_button.add_organizersrates', raise_exception=True)
+def create_organizers_rate(request):
+    if request.method == 'POST':
+        form = OrganizersRatesForm(request.POST)
+        if form.is_valid():
+            rate = form.save(commit=False)
+            rate.owner = request.user
+            rate.save()
+            return redirect('Accounting_button:organizers_rates_list')
+    else:
+        form = OrganizersRatesForm()
+    return render(request, 'Accounting_button/organizers_rates/rate_form.html', {'form': form})
+
+@login_required
+@permission_required('Accounting_button.view_organizersrates', raise_exception=True)
+def read_organizers_rate(request, rate_id):
+    rate = get_object_or_404(OrganizersRates, id=rate_id)
+    return render(request, 'Accounting_button/organizers_rates/rate_detail.html', {'rate': rate})
+
+@login_required
+@permission_required('Accounting_button.change_organizersrates', raise_exception=True)
+def update_organizers_rate(request, rate_id):
+    rate = get_object_or_404(OrganizersRates, id=rate_id)
+    if request.method == 'POST':
+        form = OrganizersRatesForm(request.POST, instance=rate)
+        if form.is_valid():
+            form.save()
+            return redirect('Accounting_button:organizers_rates_list')
+    else:
+        form = OrganizersRatesForm(instance=rate)
+    return render(request, 'Accounting_button/organizers_rates/rate_form.html', {'form': form, 'rate': rate})
+
+@login_required
+@permission_required('Accounting_button.delete_organizersrates', raise_exception=True)
+def delete_organizers_rate(request, rate_id):
+    rate = get_object_or_404(OrganizersRates, id=rate_id)
+    if request.method == 'POST':
+        try:
+            rate.delete()
+            messages.success(request, 'Ставка успешно удалена.')
+        except ProtectedError:
+            messages.error(request, 'Невозможно удалить эту ставку, так как она связана с другим объектом.', extra_tags='alert-danger')
+        return redirect('Accounting_button:organizers_rates_list')
+    return render(request, 'Accounting_button/organizers_rates/rate_confirm_delete.html', {'rate': rate})
+
+@login_required
+@permission_required('Accounting_button.view_organizersrates', raise_exception=True)
+def organizers_rates_list(request):
+    rates = OrganizersRates.objects.all()
+    return render(request, 'Accounting_button/organizers_rates/rates_list.html', {'rates': rates})
