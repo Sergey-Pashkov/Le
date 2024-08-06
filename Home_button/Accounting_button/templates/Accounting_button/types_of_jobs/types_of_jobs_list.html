@@ -3,13 +3,15 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Типы работ</h2>
+    <h2 class="mb-4">Виды работ и нормы времени</h2>
     <div class="list-group">
         {% for type_of_job in types_of_jobs %}
             <div class="list-group-item mb-2">
-                <h5 class="mb-1">{{ type_of_job.name }}</h5>
+                <h5 class="mb-1">ID: {{ type_of_job.id }} - {{ type_of_job.name }}</h5>
                 <p class="mb-1">{{ type_of_job.description }}</p>
+                <p class="mb-1">Группа: {{ type_of_job.group.name }}</p>
                 <div class="btn-group mt-2" role="group" aria-label="TypeOfJob Actions">
+                    <a href="{% url 'Accounting_button:read_type_of_job' type_of_job.id %}" class="btn btn-secondary btn-sm mr-2">Подробнее</a>
                     {% if user|has_perm:"Accounting_button.change_typesofjobs" %}
                         <a href="{% url 'Accounting_button:update_type_of_job' type_of_job.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
                     {% endif %}
@@ -21,7 +23,7 @@
         {% endfor %}
     </div>
     {% if user|has_perm:"Accounting_button.add_typesofjobs" %}
-        <a href="{% url 'Accounting_button:create_type_of_job' %}" class="btn btn-success mt-4">Добавить новый тип работы</a>
+        <a href="{% url 'Accounting_button:create_type_of_job' %}" class="btn btn-success mt-4">Добавить</a>
     {% endif %}
 </div>
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends "Accounting_button/base.html" %}
 
 {% block content %}
-<h1>{{ type_of_job.name }}</h1>
+<h1>ID: {{ type_of_job.id }} - {{ type_of_job.name }}</h1>
 <p>{{ type_of_job.description }}</p>
 <p>Стандартное время: {{ type_of_job.time_standard }}</p>
 <p>Тариф: {{ type_of_job.tariff }}</p>
