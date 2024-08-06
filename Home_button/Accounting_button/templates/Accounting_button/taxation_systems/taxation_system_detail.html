@@ -1,0 +1,14 @@
+<!-- templates/Accounting_button/taxation_systems/taxation_system_detail.html -->
+{% extends "Accounting_button/base.html" %}
+
+{% block content %}
+<h1>{{ taxation_system.name }}</h1>
+<p>{{ taxation_system.description }}</p>
+
+{% if perms.Accounting_button.change_taxationsystems %}
+    <a href="{% url 'Accounting_button:update_taxation_system' taxation_system.id %}" class="btn btn-primary">Редактировать</a>
+{% endif %}
+{% if perms.Accounting_button.delete_taxationsystems %}
+    <a href="{% url 'Accounting_button:delete_taxation_system' taxation_system.id %}" class="btn btn-danger">Удалить</a>
+{% endif %}
+{% endblock %}

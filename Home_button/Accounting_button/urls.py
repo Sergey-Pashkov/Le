@@ -54,4 +54,17 @@ urlpatterns = [
     path('organizers_rates/<int:rate_id>/', views.read_rate, name='read_rate'),  # Путь для просмотра деталей ставки
     path('organizers_rates/<int:rate_id>/update/', views.update_rate, name='update_rate'),  # Путь для обновления ставки
     path('organizers_rates/<int:rate_id>/delete/', views.delete_rate, name='delete_rate'),  # Путь для удаления ставки
+
+# Пути, относящиеся к модели TaxationSystems
+
+    # Путь для просмотра списка налоговых систем
+    path('taxation_systems/', views.taxation_systems_list, name='taxation_systems_list'),
+    # Путь для создания новой налоговой системы
+    path('taxation_systems/create/', views.create_taxation_system, name='create_taxation_system'),
+    # Путь для просмотра деталей налоговой системы по ID
+    path('taxation_systems/<int:taxation_system_id>/', views.read_taxation_system, name='read_taxation_system'),
+    # Путь для обновления существующей налоговой системы по ID
+    path('taxation_systems/<int:taxation_system_id>/update/', views.update_taxation_system, name='update_taxation_system'),
+    # Путь для удаления существующей налоговой системы по ID
+    path('taxation_systems/<int:taxation_system_id>/delete/', views.delete_taxation_system, name='delete_taxation_system'),
 ]

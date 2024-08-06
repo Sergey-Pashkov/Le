@@ -450,3 +450,78 @@ def organizers_rates_list(request):
     """
     rates = OrganizersRates.objects.all()
     return render(request, 'Accounting_button/organizers_rates/rates_list.html', {'rates': rates})
+
+
+# views.py
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from .models import TaxationSystems
+from .forms import TaxationSystemsForm
+
+@login_required
+@permission_required('Accounting_button.add_taxationsystems', raise_exception=True)
+def create_taxation_system(request):
+    """
+    Представление для создания новой налоговой системы.
+    Доступно только авторизованным пользователям с правом добавления налоговых систем.
+    """
+    if request.method == 'POST':
+        form = TaxationSystemsForm(request.POST)
+        if form.is_valid():
+            taxation_system = form.save(commit=False)
+            taxation_system.owner = request.user  # Устанавливаем текущего пользователя как владельца
+            taxation_system.save()
+            return redirect('Accounting_button:taxation_systems_list')
+    else:
+        form = TaxationSystemsForm()
+    return render(request, 'Accounting_button/taxation_systems/taxation_system_form.html', {'form': form})
+
+@login_required
+@permission_required('Accounting_button.view_taxationsystems', raise_exception=True)
+def read_taxation_system(request, taxation_system_id):
+    """
+    Представление для отображения деталей налоговой системы.
+    Доступно только авторизованным пользователям с правом просмотра налоговых систем.
+    """
+    taxation_system = get_object_or_404(TaxationSystems, id=taxation_system_id)
+    return render(request, 'Accounting_button/taxation_systems/taxation_system_detail.html', {'taxation_system': taxation_system})
+
+@login_required
+@permission_required('Accounting_button.change_taxationsystems', raise_exception=True)
+def update_taxation_system(request, taxation_system_id):
+    """
+    Представление для обновления существующей налоговой системы.
+    Доступно только авторизованным пользователям с правом изменения налоговых систем.
+    """
+    taxation_system = get_object_or_404(TaxationSystems, id=taxation_system_id)
+    if request.method == 'POST':
+        form = TaxationSystemsForm(request.POST, instance=taxation_system)
+        if form.is_valid():
+            form.save()
+            return redirect('Accounting_button:taxation_systems_list')
+    else:
+        form = TaxationSystemsForm(instance=taxation_system)
+    return render(request, 'Accounting_button/taxation_systems/taxation_system_form.html', {'form': form, 'taxation_system': taxation_system})
+
+@login_required
+@permission_required('Accounting_button.delete_taxationsystems', raise_exception=True)
+def delete_taxation_system(request, taxation_system_id):
+    """
+    Представление для удаления существующей налоговой системы.
+    Доступно только авторизованным пользователям с правом удаления налоговых систем.
+    """
+    taxation_system = get_object_or_404(TaxationSystems, id=taxation_system_id)
+    if request.method == 'POST':
+        taxation_system.delete()
+        return redirect('Accounting_button:taxation_systems_list')
+    return render(request, 'Accounting_button/taxation_systems/taxation_system_confirm_delete.html', {'taxation_system': taxation_system})
+
+@login_required
+@permission_required('Accounting_button.view_taxationsystems', raise_exception=True)
+def taxation_systems_list(request):
+    """
+    Представление для отображения списка всех налоговых систем.
+    Доступно только авторизованным пользователям с правом просмотра налоговых систем.
+    """
+    taxation_systems = TaxationSystems.objects.all()
+    return render(request, 'Accounting_button/taxation_systems/taxation_systems_list.html', {'taxation_systems': taxation_systems})

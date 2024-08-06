@@ -46,3 +46,13 @@ class OrganizersRatesForm(forms.ModelForm):
     class Meta:
         model = OrganizersRates
         fields = ['name', 'standard', 'description']
+
+
+# forms.py
+from django import forms
+from .models import TaxationSystems
+
+class TaxationSystemsForm(forms.ModelForm):
+    class Meta:
+        model = TaxationSystems
+        fields = ['name', 'description']

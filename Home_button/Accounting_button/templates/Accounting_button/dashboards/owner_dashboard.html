@@ -4,13 +4,14 @@
 <div class="container mt-4">
     <h2>Дашборд Собственника</h2>
     <p>Добро пожаловать, {{ user.username }}!</p>
-    <!-- Оберните кнопки в контейнер с классом btn-group и добавьте margin-right к кнопкам -->
-    <div class="btn-group" role="group">
+    <!-- Контейнер с классом d-flex и flex-wrap для адаптивного расположения кнопок -->
+    <div class="d-flex flex-wrap">
         <a href="{% url 'Accounting_button:functions_list' %}" class="btn btn-primary mr-2 mb-2">Функции исполнителей</a> <!-- Кнопка для перехода к функциям исполнителей -->
         <a href="{% url 'Accounting_button:rates_list' %}" class="btn btn-primary mr-2 mb-2">Тарифы исполнителей</a> <!-- Кнопка для перехода к тарифам исполнителей -->
         <a href="{% url 'Accounting_button:schedules_list' %}" class="btn btn-primary mr-2 mb-2">Штатное расписание</a> <!-- Кнопка для перехода к штатному расписанию -->
         <a href="{% url 'Accounting_button:functions_organizers_list' %}" class="btn btn-primary mr-2 mb-2">Функции организаторов</a> <!-- Кнопка для перехода к функциям организаторов -->
-        <a href="{% url 'Accounting_button:organizers_rates_list' %}" class="btn btn-primary mb-2">Тарифы организаторов</a> <!-- Кнопка для перехода к тарифам организаторов -->
+        <a href="{% url 'Accounting_button:organizers_rates_list' %}" class="btn btn-primary mr-2 mb-2">Тарифы организаторов</a> <!-- Кнопка для перехода к тарифам организаторов -->
+        <a href="{% url 'Accounting_button:taxation_systems_list' %}" class="btn btn-primary mb-2">Системы налогообложения</a> <!-- Кнопка для перехода к справочнику систем налогообложения -->
     </div>
 </div>
 {% endblock %}
