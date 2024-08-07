@@ -93,3 +93,24 @@ class TypesOfJobsAdmin(admin.ModelAdmin):
     tariff.short_description = 'Tariff (cost per minute)'  # Короткое описание поля
 
 admin.site.register(TypesOfJobs, TypesOfJobsAdmin)
+
+
+from django.contrib import admin
+from .models import Clients
+
+@admin.register(Clients)
+class ClientsAdmin(admin.ModelAdmin):
+    list_display = ('short_title', 'full_name', 'contract_price', 'inn', 'contract_number_and_date', 'tax_system', 'contact_person', 'telephone', 'email', 'owner')
+    search_fields = ('short_title', 'full_name', 'inn', 'contact_person', 'telephone', 'email')
+
+    def save_model(self, request, obj, form, change):
+        if not obj.owner:
+            obj.owner = request.user
+        super().save_model(request, obj, form, change)
+
+    def get_queryset(self, request):
+        """
+        Переопределяем метод для фильтрации скрытых записей
+        """
+        qs = super().get_queryset(request)
+        return qs.filter(hide_in_search=False)

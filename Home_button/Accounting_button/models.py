@@ -179,3 +179,35 @@ class TypesOfJobs(models.Model):
 
     def __str__(self):
         return self.name  # Строковое представление модели
+
+
+from django.db import models
+from django.contrib.auth.models import User
+
+class Clients(models.Model):
+    """
+    Модель для хранения информации о клиентах.
+    """
+    short_title = models.CharField(max_length=255)  # Краткое название
+    full_name = models.TextField()  # Полное название
+    contract_price = models.PositiveIntegerField()  # Стоимость контракта
+    inn = models.CharField(max_length=12)  # ИНН
+    contract_number_and_date = models.CharField(max_length=255)  # Номер и дата контракта
+    tax_system = models.ForeignKey(TaxationSystems, on_delete=models.PROTECT, related_name='clients')  # Налоговая система
+    activities = models.TextField()  # Деятельность
+    number_of_nomenclature_groups = models.PositiveIntegerField()  # Количество номенклатурных групп
+    contact_person = models.CharField(max_length=255)  # Контактное лицо
+    telephone = models.CharField(max_length=20)  # Телефон
+    email = models.EmailField()  # Адрес электронной почты
+    mailing_address = models.TextField()  # Почтовый адрес
+    hide_in_search = models.BooleanField(default=False)  # Скрыть в поиске
+    comments = models.TextField(blank=True, null=True)  # Комментарии
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='clients')  # Владелец
+
+    def save(self, *args, **kwargs):
+        if not self.owner and 'owner' in kwargs:
+            self.owner = kwargs.pop('owner')
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.short_title  # Возвращает краткое название при преобразовании объекта в строку
