@@ -211,3 +211,46 @@ class Clients(models.Model):
 
     def __str__(self):
         return self.short_title  # Возвращает краткое название при преобразовании объекта в строку
+
+
+# models.py
+
+# models.py
+from django.db import models
+from django.contrib.auth.models import User
+
+class StandardOperationsLog(models.Model):
+    """
+    Модель для хранения стандартных операций.
+    """
+    client = models.ForeignKey('Clients', on_delete=models.PROTECT, related_name='operations_logs')  # Выбор клиента
+    type_of_work = models.ForeignKey('TypesOfJobs', on_delete=models.PROTECT, related_name='operations_logs')  # Тип работы
+    time_standard = models.PositiveIntegerField()  # Норма времени
+    rate = models.DecimalField(max_digits=10, decimal_places=2)  # Тариф
+    quantity = models.PositiveIntegerField()  # Количество
+    all_the_time = models.PositiveIntegerField()  # Общее время
+    price = models.DecimalField(max_digits=10, decimal_places=2)  # Цена
+    date = models.DateTimeField(auto_now_add=True)  # Дата и время записи
+    owner = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name='operations_logs')  # Владелец
+
+    def save(self, *args, **kwargs):
+        # Получаем значение time_standard и rate из связанных моделей
+        if self.type_of_work:
+            self.time_standard = self.type_of_work.time_standard
+            self.rate = self.type_of_work.tariff
+
+        # Вычисляем общее время и цену
+        self.all_the_time = self.quantity * self.time_standard
+        self.price = self.all_the_time * self.rate
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Operation {self.id} - {self.client.short_title}"
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['owner'], name='idx_owner'),
+            models.Index(fields=['client'], name='idx_client'),
+            models.Index(fields=['type_of_work'], name='idx_type_of_work'),
+        ]

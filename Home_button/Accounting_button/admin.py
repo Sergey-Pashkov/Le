@@ -114,3 +114,39 @@ class ClientsAdmin(admin.ModelAdmin):
         """
         qs = super().get_queryset(request)
         return qs.filter(hide_in_search=False)
+
+
+
+
+
+
+# admin.py
+from django.contrib import admin
+from .models import StandardOperationsLog
+from .forms import StandardOperationsLogForm
+
+@admin.register(StandardOperationsLog)
+class StandardOperationsLogAdmin(admin.ModelAdmin):
+    """
+    Административный интерфейс для модели StandardOperationsLog.
+    """
+    form = StandardOperationsLogForm
+    list_display = ('id', 'client', 'type_of_work', 'time_standard', 'rate', 'quantity', 'all_the_time', 'price', 'date', 'owner')
+    list_filter = ('client', 'type_of_work', 'date', 'owner')
+    search_fields = ('client__short_title', 'type_of_work__name', 'owner__username')
+
+    def get_form(self, request, obj=None, **kwargs):
+        """
+        Переопределяем метод get_form для передачи request в форму.
+        """
+        form = super(StandardOperationsLogAdmin, self).get_form(request, obj, **kwargs)
+        form.request = request  # Передаем request в форму
+        return form
+
+    def save_model(self, request, obj, form, change):
+        """
+        Сохраняем модель с указанием владельца.
+        """
+        if not obj.owner:
+            obj.owner = request.user
+        super().save_model(request, obj, form, change)

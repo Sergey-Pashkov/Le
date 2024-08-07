@@ -87,3 +87,31 @@ class ClientsForm(forms.ModelForm):
                   'telephone', 'email', 'mailing_address', 'hide_in_search', 'comments']
 
     hide_in_search = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}), required=False)
+
+
+
+
+# forms.py
+from django import forms
+from .models import StandardOperationsLog
+
+class StandardOperationsLogForm(forms.ModelForm):
+    """
+    Форма для модели StandardOperationsLog.
+    """
+
+    class Meta:
+        model = StandardOperationsLog
+        fields = ['client', 'type_of_work', 'quantity']  # Указываем только те поля, которые должны быть доступны в форме
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)  # Получаем request из kwargs
+        super(StandardOperationsLogForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        instance = super(StandardOperationsLogForm, self).save(commit=False)
+        if self.request and not instance.owner:
+            instance.owner = self.request.user  # Устанавливаем владельца, если он не задан
+        if commit:
+            instance.save()
+        return instance
