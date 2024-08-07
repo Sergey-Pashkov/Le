@@ -929,3 +929,106 @@ def export_clients_to_excel(request):
     # Сохраняем книгу в HTTP ответ
     wb.save(response)
     return response
+
+
+
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from django.utils import timezone
+from .models import StandardOperationsLog
+from .forms import StandardOperationsLogForm
+
+def user_belongs_to_group(user, group_name):
+    """
+    Проверяет, принадлежит ли пользователь к определенной группе.
+    """
+    return user.groups.filter(name=group_name).exists()
+
+@login_required
+@permission_required('Accounting_button.add_standardoperationslog', raise_exception=True)
+def create_standard_operations_log(request):
+    """
+    Представление для создания новой записи в журнале стандартных операций.
+    Доступно только авторизованным пользователям с правом добавления записей.
+    """
+    if request.method == 'POST':
+        form = StandardOperationsLogForm(request.POST, request=request)
+        if form.is_valid():
+            form.save()
+            return redirect('Accounting_button:standard_operations_log_list')
+    else:
+        form = StandardOperationsLogForm()
+    return render(request, 'Accounting_button/standard_operations_log/standard_operations_log_form.html', {'form': form})
+
+@login_required
+@permission_required('Accounting_button.view_standardoperationslog', raise_exception=True)
+def read_standard_operations_log(request, log_id):
+    """
+    Представление для отображения деталей записи в журнале стандартных операций.
+    Доступно только авторизованным пользователям с правом просмотра записей.
+    """
+    log = get_object_or_404(StandardOperationsLog, id=log_id)
+    if log.owner != request.user and user_belongs_to_group(request.user, "Исполнитель"):
+        return redirect('Accounting_button:standard_operations_log_list')
+    return render(request, 'Accounting_button/standard_operations_log/standard_operations_log_detail.html', {'log': log})
+
+@login_required
+@permission_required('Accounting_button.change_standardoperationslog', raise_exception=True)
+def update_standard_operations_log(request, log_id):
+    """
+    Представление для обновления существующей записи в журнале стандартных операций.
+    Доступно только авторизованным пользователям с правом изменения записей.
+    """
+    log = get_object_or_404(StandardOperationsLog, id=log_id)
+    if log.owner != request.user and user_belongs_to_group(request.user, "Исполнитель"):
+        return redirect('Accounting_button:standard_operations_log_list')
+    
+    if request.method == 'POST':
+        form = StandardOperationsLogForm(request.POST, instance=log, request=request)
+        if form.is_valid():
+            form.save()
+            return redirect('Accounting_button:standard_operations_log_list')
+    else:
+        form = StandardOperationsLogForm(instance=log)
+    return render(request, 'Accounting_button/standard_operations_log/standard_operations_log_form.html', {'form': form, 'log': log})
+
+@login_required
+@permission_required('Accounting_button.delete_standardoperationslog', raise_exception=True)
+def delete_standard_operations_log(request, log_id):
+    """
+    Представление для удаления существующей записи в журнале стандартных операций.
+    Доступно только авторизованным пользователям с правом удаления записей.
+    """
+    log = get_object_or_404(StandardOperationsLog, id=log_id)
+    if log.owner != request.user and user_belongs_to_group(request.user, "Исполнитель"):
+        return redirect('Accounting_button:standard_operations_log_list')
+    
+    if request.method == 'POST':
+        log.delete()
+        return redirect('Accounting_button:standard_operations_log_list')
+    return render(request, 'Accounting_button/standard_operations_log/standard_operations_log_confirm_delete.html', {'log': log})
+
+@login_required
+@permission_required('Accounting_button.view_standardoperationslog', raise_exception=True)
+def standard_operations_log_list(request):
+    """
+    Представление для отображения списка всех записей в журнале стандартных операций,
+    сгруппированных по владельцу. Фильтрация по текущему месяцу.
+    Доступно только авторизованным пользователям с правом просмотра записей.
+    """
+    current_month = timezone.now().month
+    current_year = timezone.now().year
+    if user_belongs_to_group(request.user, "Исполнитель"):
+        logs_by_owner = StandardOperationsLog.objects.filter(owner=request.user, date__year=current_year, date__month=current_month).order_by('owner')
+    else:
+        logs_by_owner = StandardOperationsLog.objects.filter(date__year=current_year, date__month=current_month).order_by('owner')
+    
+    grouped_logs = {}
+    for log in logs_by_owner:
+        if log.owner not in grouped_logs:
+            grouped_logs[log.owner] = []
+        grouped_logs[log.owner].append(log)
+    
+    return render(request, 'Accounting_button/standard_operations_log/standard_operations_log_list.html', {'grouped_logs': grouped_logs})

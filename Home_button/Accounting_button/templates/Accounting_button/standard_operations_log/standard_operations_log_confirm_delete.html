@@ -1,0 +1,10 @@
+{% extends "Accounting_button/base.html" %}
+
+{% block content %}
+<h1>Вы уверены, что хотите удалить "ID: {{ log.id }} - {{ log.client.short_title }}"?</h1>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Да, удалить</button>
+    <a href="{% url 'Accounting_button:read_standard_operations_log' log.id %}" class="btn btn-secondary">Отмена</a>
+</form>
+{% endblock %}

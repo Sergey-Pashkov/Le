@@ -1,0 +1,25 @@
+{% extends "Accounting_button/base.html" %}
+{% load form_tags %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">{% if log %}Редактировать{% else %}Создать{% endif %} запись в журнале стандартных операций</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_client">Клиент</label>
+            {{ form.client|add_class:"form-control" }}
+        </div>
+        <div class="form-group">
+            <label for="id_type_of_work">Тип работы</label>
+            {{ form.type_of_work|add_class:"form-control" }}
+        </div>
+        <div class="form-group">
+            <label for="id_quantity">Количество</label>
+            {{ form.quantity|add_class:"form-control" }}
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </form>
+</div>
+{% endblock %}

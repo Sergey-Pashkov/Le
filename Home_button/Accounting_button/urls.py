@@ -106,4 +106,10 @@ urlpatterns = [
     # Путь для экспорта клиентов в Excel
     path('clients/export/', views.export_clients_to_excel, name='export_clients_to_excel'),
 
+    # Пути для стандартных операций
+    path('standard_operations_log/', views.standard_operations_log_list, name='standard_operations_log_list'),
+    path('standard_operations_log/create/', views.create_standard_operations_log, name='create_standard_operations_log'),
+    path('standard_operations_log/<int:log_id>/', views.read_standard_operations_log, name='read_standard_operations_log'),
+    path('standard_operations_log/<int:log_id>/update/', views.update_standard_operations_log, name='update_standard_operations_log'),
+    path('standard_operations_log/<int:log_id>/delete/', views.delete_standard_operations_log, name='delete_standard_operations_log'),
 ]
