@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Клиенты (Всего: {{ total_clients }})</h2>
+    <h2 class="mb-4">Список клиентов</h2>
     {% for tax_system, clients in grouped_clients.items %}
         <h3>{{ tax_system.name }} ({{ clients.count }})</h3>
         <div class="list-group">
@@ -13,13 +13,20 @@
                     <p class="mb-1">{{ client.full_name }}</p>
                     <div class="btn-group mt-2" role="group" aria-label="Client Actions">
                         <a href="{% url 'Accounting_button:read_client' client.id %}" class="btn btn-secondary btn-sm mr-2">Подробнее</a>
-                        <a href="{% url 'Accounting_button:update_client' client.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
-                        <a href="{% url 'Accounting_button:delete_client' client.id %}" class="btn btn-danger btn-sm">Удалить</a>
+                        {% if user|has_perm:"Accounting_button.change_clients" %}
+                            <a href="{% url 'Accounting_button:update_client' client.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
+                        {% endif %}
+                        {% if user|has_perm:"Accounting_button.delete_clients" %}
+                            <a href="{% url 'Accounting_button:delete_client' client.id %}" class="btn btn-danger btn-sm">Удалить</a>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% endfor %}
-    <a href="{% url 'Accounting_button:create_client' %}" class="btn btn-success mt-4">Добавить клиента</a>
+    {% if user|has_perm:"Accounting_button.add_clients" %}
+        <a href="{% url 'Accounting_button:create_client' %}" class="btn btn-success mt-4">Добавить нового клиента</a>
+    {% endif %}
+    <a href="{% url 'Accounting_button:export_clients_to_excel' %}" class="btn btn-info mt-4">Выгрузить в Excel</a>
 </div>
 {% endblock %}

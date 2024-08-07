@@ -862,3 +862,57 @@ def clients_list(request):
         'total_clients': total_clients
     })
 
+import openpyxl
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from .models import Clients
+
+@login_required
+def export_clients_to_excel(request):
+    """
+    Представление для экспорта клиентов в Excel.
+    Доступно только авторизованным пользователям.
+    """
+    # Создаем книгу и лист
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Clients"
+
+    # Добавляем заголовки
+    headers = [
+        "ID", "Short Title", "Full Name", "Contract Price", "INN", "Contract Number and Date",
+        "Tax System", "Activities", "Number of Nomenclature Groups", "Contact Person",
+        "Telephone", "Email", "Mailing Address", "Hide in Search", "Comments", "Owner"
+    ]
+    ws.append(headers)
+
+    # Получаем данные
+    clients = Clients.objects.all()
+
+    for client in clients:
+        ws.append([
+            client.id,
+            client.short_title,
+            client.full_name,
+            client.contract_price,
+            client.inn,
+            client.contract_number_and_date,
+            client.tax_system.name,
+            client.activities,
+            client.number_of_nomenclature_groups,
+            client.contact_person,
+            client.telephone,
+            client.email,
+            client.mailing_address,
+            "Yes" if client.hide_in_search else "No",
+            client.comments,
+            client.owner.username if client.owner else 'N/A'
+        ])
+
+    # Настраиваем HTTP ответ
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=clients.xlsx'
+
+    # Сохраняем книгу в HTTP ответ
+    wb.save(response)
+    return response

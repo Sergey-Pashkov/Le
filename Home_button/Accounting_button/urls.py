@@ -103,4 +103,7 @@ urlpatterns = [
     path('clients/<int:client_id>/update/', views.update_client, name='update_client'),
     # Путь для удаления существующего клиента по ID
     path('clients/<int:client_id>/delete/', views.delete_client, name='delete_client'),
+    # Путь для экспорта клиентов в Excel
+    path('clients/export/', views.export_clients_to_excel, name='export_clients_to_excel'),
+
 ]
