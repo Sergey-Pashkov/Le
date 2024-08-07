@@ -811,6 +811,13 @@ def create_client(request):
         form = ClientsForm()
     return render(request, 'Accounting_button/clients/client_form.html', {'form': form, 'client': None})
 
+
+
+
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Clients
+
 @login_required
 def read_client(request, client_id):
     """
@@ -819,6 +826,12 @@ def read_client(request, client_id):
     """
     client = get_object_or_404(Clients, id=client_id)
     return render(request, 'Accounting_button/clients/client_detail.html', {'client': client})
+
+
+
+
+
+
 
 @login_required
 def update_client(request, client_id):

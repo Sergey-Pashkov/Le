@@ -1,5 +1,7 @@
 {% extends "Accounting_button/base.html" %}
 
+{% load permissions %}  <!-- Загружаем фильтры для проверки прав доступа -->
+
 {% block content %}
 <h1>ID: {{ client.id }} - {{ client.short_title }}</h1>
 <p>Полное название: {{ client.full_name }}</p>
@@ -15,6 +17,12 @@
 <p>Почтовый адрес: {{ client.mailing_address }}</p>
 <p>Комментарии: {{ client.comments }}</p>
 
-<a href="{% url 'Accounting_button:update_client' client.id %}" class="btn btn-primary">Редактировать</a>
-<a href="{% url 'Accounting_button:delete_client' client.id %}" class="btn btn-danger">Удалить</a>
+<div class="btn-group mt-2" role="group" aria-label="Client Actions">
+    {% if perms.Accounting_button.change_clients %}
+        <a href="{% url 'Accounting_button:update_client' client.id %}" class="btn btn-primary mr-2">Редактировать</a>
+    {% endif %}
+    {% if perms.Accounting_button.delete_clients %}
+        <a href="{% url 'Accounting_button:delete_client' client.id %}" class="btn btn-danger">Удалить</a>
+    {% endif %}
+</div>
 {% endblock %}
