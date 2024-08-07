@@ -713,3 +713,47 @@ def delete_organizers_rate(request, rate_id):
 def organizers_rates_list(request):
     rates = OrganizersRates.objects.all()
     return render(request, 'Accounting_button/organizers_rates/rates_list.html', {'rates': rates})
+
+
+
+
+import openpyxl
+from django.http import HttpResponse
+
+@login_required
+def export_types_of_jobs_to_excel(request):
+    """
+    Представление для экспорта типов работ в Excel.
+    Доступно только авторизованным пользователям.
+    """
+    # Создаем книгу и лист
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Types of Jobs"
+
+    # Добавляем заголовки
+    headers = ["ID", "Name", "Description", "Time Standard", "Tariff Name", "Tariff", "Group", "Owner"]
+    ws.append(headers)
+
+    # Получаем данные
+    types_of_jobs = TypesOfJobs.objects.all()
+
+    for job in types_of_jobs:
+        ws.append([
+            job.id,
+            job.name,
+            job.description,
+            job.time_standard,
+            job.tariff_name.name,
+            job.tariff_name.cost_per_minute,
+            job.group.name,
+            job.owner.username if job.owner else 'N/A'
+        ])
+
+    # Настраиваем HTTP ответ
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=types_of_jobs.xlsx'
+
+    # Сохраняем книгу в HTTP ответ
+    wb.save(response)
+    return response

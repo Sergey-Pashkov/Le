@@ -89,4 +89,7 @@ urlpatterns = [
     path('organizers_rates/<int:rate_id>/', views.read_organizers_rate, name='read_organizers_rate'),
     path('organizers_rates/<int:rate_id>/update/', views.update_organizers_rate, name='update_organizers_rate'),
     path('organizers_rates/<int:rate_id>/delete/', views.delete_organizers_rate, name='delete_organizers_rate'),
+
+    # выгрузка справочника видов работ
+    path('types_of_jobs/export/', views.export_types_of_jobs_to_excel, name='export_types_of_jobs_to_excel'),
 ]

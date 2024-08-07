@@ -3,9 +3,9 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Виды работ ({{ total_jobs }})</h2> <!-- Отображаем общее количество видов работ -->
+    <h2 class="mb-4">Виды работ (Всего: {{ total_jobs }})</h2>
     {% for group, jobs in grouped_jobs.items %}
-        <h3>{{ group.name }} ({{ jobs|length }})</h3> <!-- Отображаем название группы и количество видов работ -->
+        <h3>{{ group.name }} ({{ jobs.count }})</h3>
         <div class="list-group">
             {% for type_of_job in jobs %}
                 <div class="list-group-item mb-2">
@@ -27,5 +27,6 @@
     {% if user|has_perm:"Accounting_button.add_typesofjobs" %}
         <a href="{% url 'Accounting_button:create_type_of_job' %}" class="btn btn-success mt-4">Добавить</a>
     {% endif %}
+    <a href="{% url 'Accounting_button:export_types_of_jobs_to_excel' %}" class="btn btn-info mt-4">Выгрузить в Excel</a>
 </div>
 {% endblock %}
