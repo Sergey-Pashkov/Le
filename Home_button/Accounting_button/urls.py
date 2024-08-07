@@ -92,4 +92,15 @@ urlpatterns = [
 
     # выгрузка справочника видов работ
     path('types_of_jobs/export/', views.export_types_of_jobs_to_excel, name='export_types_of_jobs_to_excel'),
+
+    # Путь для списка клиентов
+    path('clients/', views.clients_list, name='clients_list'),
+    # Путь для создания нового клиента
+    path('clients/create/', views.create_client, name='create_client'),
+    # Путь для просмотра деталей клиента по ID
+    path('clients/<int:client_id>/', views.read_client, name='read_client'),
+    # Путь для обновления существующего клиента по ID
+    path('clients/<int:client_id>/update/', views.update_client, name='update_client'),
+    # Путь для удаления существующего клиента по ID
+    path('clients/<int:client_id>/delete/', views.delete_client, name='delete_client'),
 ]

@@ -578,7 +578,19 @@ def types_of_jobs_list(request):
     })
 
 
-# Accounting_button/views.py
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Accounting_button/views.py
 
 from django.shortcuts import render, get_object_or_404, redirect
@@ -757,3 +769,78 @@ def export_types_of_jobs_to_excel(request):
     # Сохраняем книгу в HTTP ответ
     wb.save(response)
     return response
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from .models import Clients, TaxationSystems
+from .forms import ClientsForm
+
+@login_required
+def create_client(request):
+    """
+    Представление для создания нового клиента.
+    Доступно только авторизованным пользователям.
+    """
+    if request.method == 'POST':
+        form = ClientsForm(request.POST)
+        if form.is_valid():
+            client = form.save(commit=False)
+            client.owner = request.user  # Устанавливаем текущего пользователя как владельца
+            client.save()
+            return redirect('Accounting_button:clients_list')
+    else:
+        form = ClientsForm()
+    return render(request, 'Accounting_button/clients/client_form.html', {'form': form, 'client': None})
+
+@login_required
+def read_client(request, client_id):
+    """
+    Представление для отображения деталей клиента.
+    Доступно только авторизованным пользователям.
+    """
+    client = get_object_or_404(Clients, id=client_id)
+    return render(request, 'Accounting_button/clients/client_detail.html', {'client': client})
+
+@login_required
+def update_client(request, client_id):
+    """
+    Представление для обновления существующего клиента.
+    Доступно только авторизованным пользователям.
+    """
+    client = get_object_or_404(Clients, id=client_id)
+    if request.method == 'POST':
+        form = ClientsForm(request.POST, instance=client)
+        if form.is_valid():
+            form.save()
+            return redirect('Accounting_button:clients_list')
+    else:
+        form = ClientsForm(instance=client)
+    return render(request, 'Accounting_button/clients/client_form.html', {'form': form, 'client': client})
+
+@login_required
+def delete_client(request, client_id):
+    """
+    Представление для удаления существующего клиента.
+    Доступно только авторизованным пользователям.
+    """
+    client = get_object_or_404(Clients, id=client_id)
+    if request.method == 'POST':
+        client.delete()
+        return redirect('Accounting_button:clients_list')
+    return render(request, 'Accounting_button/clients/client_confirm_delete.html', {'client': client})
+
+@login_required
+def clients_list(request):
+    """
+    Представление для отображения списка всех клиентов, сгруппированных по налоговой системе.
+    Доступно только авторизованным пользователям.
+    """
+    tax_systems = TaxationSystems.objects.all().order_by('name')
+    grouped_clients = {tax_system: Clients.objects.filter(tax_system=tax_system).order_by('short_title') for tax_system in tax_systems}
+    total_clients = Clients.objects.count()
+    return render(request, 'Accounting_button/clients/clients_list.html', {
+        'grouped_clients': grouped_clients,
+        'total_clients': total_clients
+    })
+

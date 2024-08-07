@@ -1,0 +1,69 @@
+{% extends "Accounting_button/base.html" %}
+{% load form_tags %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">{% if client %}Редактировать{% else %}Создать{% endif %} клиента</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_short_title">Краткое название</label>
+            {{ form.short_title|add_class:"form-control" }}
+        </div>
+        <div class="form-group">
+            <label for="id_full_name">Полное название</label>
+            {{ form.full_name|add_class:"form-control" }}
+        </div>
+        <div class="form-group">
+            <label for="id_contract_price">Стоимость контракта</label>
+            {{ form.contract_price|add_class:"form-control" }}
+        </div>
+        <div class="form-group">
+            <label for="id_inn">ИНН</label>
+            {{ form.inn|add_class:"form-control" }}
+        </div>
+        <div class="form-group">
+            <label for="id_contract_number_and_date">Номер и дата контракта</label>
+            {{ form.contract_number_and_date|add_class:"form-control" }}
+        </div>
+        <div class="form-group">
+            <label for="id_tax_system">Налоговая система</label>
+            {{ form.tax_system|add_class:"form-control" }}
+        </div>
+        <div class="form-group">
+            <label for="id_activities">Деятельность</label>
+            {{ form.activities|add_class:"form-control" }}
+        </div>
+        <div class="form-group">
+            <label for="id_number_of_nomenclature_groups">Количество номенклатурных групп</label>
+            {{ form.number_of_nomenclature_groups|add_class:"form-control" }}
+        </div>
+        <div class="form-group">
+            <label for="id_contact_person">Контактное лицо</label>
+            {{ form.contact_person|add_class:"form-control" }}
+        </div>
+        <div class="form-group">
+            <label for="id_telephone">Телефон</label>
+            {{ form.telephone|add_class:"form-control" }}
+        </div>
+        <div class="form-group">
+            <label for="id_email">Адрес электронной почты</label>
+            {{ form.email|add_class:"form-control" }}
+        </div>
+        <div class="form-group">
+            <label for="id_mailing_address">Почтовый адрес</label>
+            {{ form.mailing_address|add_class:"form-control" }}
+        </div>
+        <div class="form-check">
+            <label for="id_hide_in_search">Скрыть в поиске</label>
+            {{ form.hide_in_search|add_class:"form-check-input" }}
+        </div>
+        <div class="form-group">
+            <label for="id_comments">Комментарии</label>
+            {{ form.comments|add_class:"form-control" }}
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </form>
+</div>
+{% endblock %}

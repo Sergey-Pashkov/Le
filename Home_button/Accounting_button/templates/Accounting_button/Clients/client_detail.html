@@ -1,0 +1,20 @@
+{% extends "Accounting_button/base.html" %}
+
+{% block content %}
+<h1>ID: {{ client.id }} - {{ client.short_title }}</h1>
+<p>Полное название: {{ client.full_name }}</p>
+<p>Стоимость контракта: {{ client.contract_price }}</p>
+<p>ИНН: {{ client.inn }}</p>
+<p>Номер и дата контракта: {{ client.contract_number_and_date }}</p>
+<p>Налоговая система: {{ client.tax_system.name }}</p>
+<p>Деятельность: {{ client.activities }}</p>
+<p>Количество номенклатурных групп: {{ client.number_of_nomenclature_groups }}</p>
+<p>Контактное лицо: {{ client.contact_person }}</p>
+<p>Телефон: {{ client.telephone }}</p>
+<p>Адрес электронной почты: {{ client.email }}</p>
+<p>Почтовый адрес: {{ client.mailing_address }}</p>
+<p>Комментарии: {{ client.comments }}</p>
+
+<a href="{% url 'Accounting_button:update_client' client.id %}" class="btn btn-primary">Редактировать</a>
+<a href="{% url 'Accounting_button:delete_client' client.id %}" class="btn btn-danger">Удалить</a>
+{% endblock %}
