@@ -75,10 +75,15 @@ class TypesOfJobsForm(forms.ModelForm):
         fields = ['name', 'description', 'time_standard', 'tariff_name', 'group']
 
 
+
 from django import forms
 from .models import Clients
 
 class ClientsForm(forms.ModelForm):
     class Meta:
         model = Clients
-        fields = ['short_title', 'full_name', 'contract_price', 'inn', 'contract_number_and_date', 'tax_system', 'activities', 'number_of_nomenclature_groups', 'contact_person', 'telephone', 'email', 'mailing_address', 'hide_in_search', 'comments']
+        fields = ['short_title', 'full_name', 'contract_price', 'inn', 'contract_number_and_date',
+                  'tax_system', 'activities', 'number_of_nomenclature_groups', 'contact_person',
+                  'telephone', 'email', 'mailing_address', 'hide_in_search', 'comments']
+
+    hide_in_search = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}), required=False)

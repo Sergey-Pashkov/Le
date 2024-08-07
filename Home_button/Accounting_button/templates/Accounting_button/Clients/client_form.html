@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container mt-4">
     <h2 class="mb-4">{% if client %}Редактировать{% else %}Создать{% endif %} клиента</h2>
-
+    
     <form method="post">
         {% csrf_token %}
         <div class="form-group">
@@ -48,7 +48,7 @@
             {{ form.telephone|add_class:"form-control" }}
         </div>
         <div class="form-group">
-            <label for="id_email">Адрес электронной почты</label>
+            <label for="id_email">Email</label>
             {{ form.email|add_class:"form-control" }}
         </div>
         <div class="form-group">
@@ -56,8 +56,8 @@
             {{ form.mailing_address|add_class:"form-control" }}
         </div>
         <div class="form-check">
-            <label for="id_hide_in_search">Скрыть в поиске</label>
             {{ form.hide_in_search|add_class:"form-check-input" }}
+            <label class="form-check-label" for="id_hide_in_search">Скрыть в поиске</label>
         </div>
         <div class="form-group">
             <label for="id_comments">Комментарии</label>

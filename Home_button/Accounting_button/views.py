@@ -366,6 +366,13 @@ def update_taxation_system(request, taxation_system_id):
         form = TaxationSystemsForm(instance=taxation_system)
     return render(request, 'Accounting_button/taxation_systems/taxation_system_form.html', {'form': form, 'taxation_system': taxation_system})
 
+
+from django.contrib import messages
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import ProtectedError
+from .models import TaxationSystems
+
 @login_required
 @permission_required('Accounting_button.delete_taxationsystems', raise_exception=True)
 def delete_taxation_system(request, taxation_system_id):
@@ -375,9 +382,20 @@ def delete_taxation_system(request, taxation_system_id):
     """
     taxation_system = get_object_or_404(TaxationSystems, id=taxation_system_id)
     if request.method == 'POST':
-        taxation_system.delete()
+        try:
+            taxation_system.delete()
+            messages.success(request, 'Налоговая система успешно удалена.')
+        except ProtectedError:
+            messages.error(request, 'Невозможно удалить эту налоговую систему, так как она связана с клиентами.', extra_tags='alert-danger')
         return redirect('Accounting_button:taxation_systems_list')
     return render(request, 'Accounting_button/taxation_systems/taxation_system_confirm_delete.html', {'taxation_system': taxation_system})
+
+
+
+
+
+
+
 
 @login_required
 @permission_required('Accounting_button.view_taxationsystems', raise_exception=True)
