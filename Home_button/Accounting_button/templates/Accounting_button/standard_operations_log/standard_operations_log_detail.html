@@ -2,20 +2,23 @@
 {% load permissions %} <!-- Загрузка тега permissions -->
 
 {% block content %}
-<h1>ID: {{ log.id }} - {{ log.client.short_title }}</h1>
-<p>Тип работы: {{ log.type_of_work.name }}</p>
-<p>Количество: {{ log.quantity }}</p>
-<p>Норма времени: {{ log.time_standard }}</p>
-<p>Тариф: {{ log.rate }}</p>
-<p>Общее время: {{ log.all_the_time }}</p>
-<p>Цена: {{ log.price }}</p>
-<p>Дата: {{ log.date }}</p>
-<p>Владелец: {{ log.owner.username }}</p>
+<div class="container mt-4">
+    <h2>Привет, {{ user.username }}!</h2>
+    <h1>ID: {{ log.id }} - {{ log.client.short_title }}</h1>
+    <p>Тип работы: {{ log.type_of_work.name }}</p>
+    <p>Количество: {{ log.quantity }}</p>
+    <p>Норма времени: {{ log.time_standard }} мин.</p>
+    <p>Тариф: {{ log.rate }} руб./мин.</p>
+    <p>Общее время: {{ log.all_the_time }} мин.</p>
+    <p>Стоимость: {{ log.price }} руб.</p>
+    <p>Дата: {{ log.date }}</p>
+    <p>Владелец: {{ log.owner.username }}</p>
 
-{% if log.owner == user and user|has_perm:"Accounting_button.change_standardoperationslog" %}
-    <a href="{% url 'Accounting_button:update_standard_operations_log' log.id %}" class="btn btn-primary">Редактировать</a>
-{% endif %}
-{% if log.owner == user and user|has_perm:"Accounting_button.delete_standardoperationslog" %}
-    <a href="{% url 'Accounting_button:delete_standard_operations_log' log.id %}" class="btn btn-danger">Удалить</a>
-{% endif %}
+    {% if log.owner == user and user|has_perm:"Accounting_button.change_standardoperationslog" %}
+        <a href="{% url 'Accounting_button:update_standard_operations_log' log.id %}" class="btn btn-primary">Редактировать</a>
+    {% endif %}
+    {% if log.owner == user and user|has_perm:"Accounting_button.delete_standardoperationslog" %}
+        <a href="{% url 'Accounting_button:delete_standard_operations_log' log.id %}" class="btn btn-danger">Удалить</a>
+    {% endif %}
+</div>
 {% endblock %}

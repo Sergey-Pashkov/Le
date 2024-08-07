@@ -933,7 +933,6 @@ def export_clients_to_excel(request):
 
 
 
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils import timezone
@@ -1031,4 +1030,4 @@ def standard_operations_log_list(request):
             grouped_logs[log.owner] = []
         grouped_logs[log.owner].append(log)
     
-    return render(request, 'Accounting_button/standard_operations_log/standard_operations_log_list.html', {'grouped_logs': grouped_logs})
+    return render(request, 'Accounting_button/standard_operations_log/standard_operations_log_list.html', {'grouped_logs': grouped_logs}) 
