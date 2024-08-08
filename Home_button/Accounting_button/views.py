@@ -562,6 +562,13 @@ def update_type_of_job(request, type_of_job_id):
         form = TypesOfJobsForm(instance=type_of_job)
     return render(request, 'Accounting_button/types_of_jobs/type_of_job_form.html', {'form': form, 'type_of_job': type_of_job})
 
+
+
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import ProtectedError
+from .models import TypesOfJobs
+
 @login_required
 @permission_required('Accounting_button.delete_typesofjobs', raise_exception=True)
 def delete_type_of_job(request, type_of_job_id):
@@ -569,11 +576,27 @@ def delete_type_of_job(request, type_of_job_id):
     Представление для удаления существующего типа работы.
     Доступно только авторизованным пользователям с правом удаления типов работ.
     """
+    # Получаем объект типа работы или возвращаем 404 ошибку, если он не найден
     type_of_job = get_object_or_404(TypesOfJobs, id=type_of_job_id)
+    error_message = None  # Переменная для хранения сообщения об ошибке
+
     if request.method == 'POST':
-        type_of_job.delete()
-        return redirect('Accounting_button:types_of_jobs_list')
-    return render(request, 'Accounting_button/types_of_jobs/type_of_job_confirm_delete.html', {'type_of_job': type_of_job})
+        try:
+            # Пытаемся удалить объект типа работы
+            type_of_job.delete()
+            # Перенаправляем пользователя на список типов работ после успешного удаления
+            return redirect('Accounting_button:types_of_jobs_list')
+        except ProtectedError:
+            # Если возникает ошибка ProtectedError, задаем сообщение об ошибке
+            error_message = (
+                "Невозможно удалить тип работы, так как существуют связанные записи в журнале стандартных операций."
+            )
+    
+    # Отображаем страницу подтверждения удаления с возможным сообщением об ошибке
+    return render(request, 'Accounting_button/types_of_jobs/type_of_job_confirm_delete.html', {'type_of_job': type_of_job, 'error_message': error_message})
+
+
+
 
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
