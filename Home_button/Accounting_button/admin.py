@@ -150,3 +150,13 @@ class StandardOperationsLogAdmin(admin.ModelAdmin):
         if not obj.owner:
             obj.owner = request.user
         super().save_model(request, obj, form, change)
+
+
+from django.contrib import admin
+from .models import NonStandardOperationsLog
+
+@admin.register(NonStandardOperationsLog)
+class NonStandardOperationsLogAdmin(admin.ModelAdmin):
+    list_display = ('client', 'content_of_the_work', 'duration', 'rate', 'price', 'date', 'owner')
+    search_fields = ('client__short_title', 'content_of_the_work', 'owner__username')
+    list_filter = ('date', 'client', 'owner')
