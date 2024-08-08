@@ -932,7 +932,6 @@ def export_clients_to_excel(request):
 
 
 
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils import timezone
@@ -959,6 +958,9 @@ def create_standard_operations_log(request):
             return redirect('Accounting_button:standard_operations_log_list')
     else:
         form = StandardOperationsLogForm()
+        # Сортировка клиентов и типов работ по ID
+        form.fields['client'].queryset = form.fields['client'].queryset.order_by('id')
+        form.fields['type_of_work'].queryset = form.fields['type_of_work'].queryset.order_by('id')
     return render(request, 'Accounting_button/standard_operations_log/standard_operations_log_form.html', {'form': form})
 
 @login_required
@@ -991,6 +993,9 @@ def update_standard_operations_log(request, log_id):
             return redirect('Accounting_button:standard_operations_log_list')
     else:
         form = StandardOperationsLogForm(instance=log)
+        # Сортировка клиентов и типов работ по ID
+        form.fields['client'].queryset = form.fields['client'].queryset.order_by('id')
+        form.fields['type_of_work'].queryset = form.fields['type_of_work'].queryset.order_by('id')
     return render(request, 'Accounting_button/standard_operations_log/standard_operations_log_form.html', {'form': form, 'log': log})
 
 @login_required
@@ -1030,4 +1035,4 @@ def standard_operations_log_list(request):
             grouped_logs[log.owner] = []
         grouped_logs[log.owner].append(log)
     
-    return render(request, 'Accounting_button/standard_operations_log/standard_operations_log_list.html', {'grouped_logs': grouped_logs}) 
+    return render(request, 'Accounting_button/standard_operations_log/standard_operations_log_list.html', {'grouped_logs': grouped_logs})
