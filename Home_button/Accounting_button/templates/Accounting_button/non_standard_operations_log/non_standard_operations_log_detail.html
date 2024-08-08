@@ -14,8 +14,10 @@
     <p>Владелец: {{ log.owner.username }}</p>
 
     <div class="d-flex mt-4">
-        <a href="{% url 'Accounting_button:update_non_standard_operations_log' log.id %}" class="btn btn-primary mr-2">Редактировать</a>
-        <a href="{% url 'Accounting_button:delete_non_standard_operations_log' log.id %}" class="btn btn-danger mr-2">Удалить</a>
+        {% if log.owner == user %}
+            <a href="{% url 'Accounting_button:update_non_standard_operations_log' log.id %}" class="btn btn-primary mr-2">Редактировать</a>
+            <a href="{% url 'Accounting_button:delete_non_standard_operations_log' log.id %}" class="btn btn-danger mr-2">Удалить</a>
+        {% endif %}
         <a href="{% url 'Accounting_button:non_standard_operations_log_list' %}" class="btn btn-secondary">Вернуться в журнал</a>
     </div>
 </div>

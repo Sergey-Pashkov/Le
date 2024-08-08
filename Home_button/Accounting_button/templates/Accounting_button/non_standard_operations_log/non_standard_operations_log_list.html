@@ -5,7 +5,9 @@
 <div class="container mt-4">
     <h2 class="mb-4">Журнал нестандартных операций</h2>
     <p>Добро пожаловать, {{ user.username }}!</p>  <!-- Приветствие пользователю -->
-    <a href="{% url 'Accounting_button:create_non_standard_operations_log' %}" class="btn btn-success mb-4">Добавить запись</a>  <!-- Кнопка для добавления новой записи -->
+    {% if user|has_group:"Исполнитель" %}
+        <a href="{% url 'Accounting_button:create_non_standard_operations_log' %}" class="btn btn-success mb-4">Добавить запись</a>  <!-- Кнопка для добавления новой записи -->
+    {% endif %}
     {% for owner, logs in grouped_logs.items %}
         <h3>{{ owner.username }}</h3>  <!-- Имя владельца записей -->
         <div class="list-group">
@@ -18,8 +20,10 @@
                     <p>Дата: {{ log.date }}</p>
                     <div class="btn-group mt-2" role="group" aria-label="Log Actions">
                         <a href="{% url 'Accounting_button:read_non_standard_operations_log' log.id %}" class="btn btn-secondary btn-sm mr-2">Подробнее</a>
-                        <a href="{% url 'Accounting_button:update_non_standard_operations_log' log.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
-                        <a href="{% url 'Accounting_button:delete_non_standard_operations_log' log.id %}" class="btn btn-danger btn-sm">Удалить</a>
+                        {% if log.owner == user %}
+                            <a href="{% url 'Accounting_button:update_non_standard_operations_log' log.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
+                            <a href="{% url 'Accounting_button:delete_non_standard_operations_log' log.id %}" class="btn btn-danger btn-sm">Удалить</a>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}

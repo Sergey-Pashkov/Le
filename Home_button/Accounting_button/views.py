@@ -1090,7 +1090,13 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from .models import NonStandardOperationsLog
 from .forms import NonStandardOperationsLogForm
+from django.db.models import ProtectedError
 
+def user_belongs_to_group(user, group_name):
+    """
+    Проверяет, принадлежит ли пользователь к определенной группе.
+    """
+    return user.groups.filter(name=group_name).exists()
 
 @login_required
 def create_non_standard_operations_log(request):
@@ -1113,12 +1119,6 @@ def create_non_standard_operations_log(request):
         form.fields['rate'].queryset = form.fields['rate'].queryset.order_by('id')
     return render(request, 'Accounting_button/non_standard_operations_log/non_standard_operations_log_form.html', {'form': form})
 
-
-
-
-
-
-
 @login_required
 def read_non_standard_operations_log(request, log_id):
     """
@@ -1126,6 +1126,8 @@ def read_non_standard_operations_log(request, log_id):
     Доступно только авторизованным пользователям.
     """
     log = get_object_or_404(NonStandardOperationsLog, id=log_id)
+    if log.owner != request.user and user_belongs_to_group(request.user, "Исполнитель"):
+        return redirect('Accounting_button:non_standard_operations_log_list')
     return render(request, 'Accounting_button/non_standard_operations_log/non_standard_operations_log_detail.html', {'log': log})
 
 @login_required
@@ -1135,6 +1137,8 @@ def update_non_standard_operations_log(request, log_id):
     Доступно только авторизованным пользователям.
     """
     log = get_object_or_404(NonStandardOperationsLog, id=log_id)
+    if log.owner != request.user and user_belongs_to_group(request.user, "Исполнитель"):
+        return redirect('Accounting_button:non_standard_operations_log_list')
     
     if request.method == 'POST':
         form = NonStandardOperationsLogForm(request.POST, instance=log, request=request)
@@ -1155,6 +1159,8 @@ def delete_non_standard_operations_log(request, log_id):
     Доступно только авторизованным пользователям.
     """
     log = get_object_or_404(NonStandardOperationsLog, id=log_id)
+    if log.owner != request.user and user_belongs_to_group(request.user, "Исполнитель"):
+        return redirect('Accounting_button:non_standard_operations_log_list')
     
     if request.method == 'POST':
         try:
@@ -1174,7 +1180,13 @@ def non_standard_operations_log_list(request):
     сгруппированных по владельцу.
     Доступно только авторизованным пользователям.
     """
-    logs_by_owner = NonStandardOperationsLog.objects.all().order_by('owner')
+    current_month = timezone.now().month
+    current_year = timezone.now().year
+    
+    if user_belongs_to_group(request.user, "Исполнитель"):
+        logs_by_owner = NonStandardOperationsLog.objects.filter(owner=request.user, date__year=current_year, date__month=current_month).order_by('owner')
+    else:
+        logs_by_owner = NonStandardOperationsLog.objects.filter(date__year=current_year, date__month=current_month).order_by('owner')
     
     grouped_logs = {}
     for log in logs_by_owner:

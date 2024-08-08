@@ -38,7 +38,7 @@
             <label for="id_rate">Тариф</label>
             <select id="id_rate" name="rate" class="form-control">
                 {% for rate in form.fields.rate.queryset %}
-                    <option value="{{ rate.id }}" {% if rate.id == form.rate.value %}selected{% endif %}>ID: {{ rate.id }} - {{ rate.cost_per_minute }} руб./мин.</option>
+                    <option value="{{ rate.id }}" {% if rate.id == form.rate.value %}selected{% endif %}>ID: {{ rate.id }} - {{ rate.name }} - {{ rate.cost_per_minute }} руб./мин.</option>
                 {% endfor %}
             </select>
         </div>
