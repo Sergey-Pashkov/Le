@@ -1,0 +1,13 @@
+{% extends "Accounting_button/base.html" %}
+
+{% block content %}
+<h1>{{ type_of_income.name }}</h1>
+<p>{{ type_of_income.description }}</p>
+
+{% if perms.Accounting_button.change_typesofincome %}
+    <a href="{% url 'Accounting_button:update_type_of_income' type_of_income.id %}" class="btn btn-primary">Редактировать</a>
+{% endif %}
+{% if perms.Accounting_button.delete_typesofincome %}
+    <a href="{% url 'Accounting_button:delete_type_of_income' type_of_income.id %}" class="btn btn-danger">Удалить</a>
+{% endif %}
+{% endblock %}

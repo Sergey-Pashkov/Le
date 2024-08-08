@@ -1,0 +1,17 @@
+{% extends "Accounting_button/base.html" %}
+
+{% block content %}
+<h1>Вы уверены, что хотите удалить "{{ type_of_income.name }}"?</h1>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Да, удалить</button>
+    <a href="{% url 'Accounting_button:read_type_of_income' type_of_income.id %}" class="btn btn-secondary">Отмена</a>
+</form>
+{% if messages %}
+    <ul class="mt-3">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}

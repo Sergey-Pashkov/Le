@@ -145,3 +145,17 @@ class NonStandardOperationsLogForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
+
+
+from django import forms
+from .models import TypesOfIncome
+
+class TypesOfIncomeForm(forms.ModelForm):
+    """
+    Форма для модели TypesOfIncome.
+    """
+
+    class Meta:
+        model = TypesOfIncome
+        fields = ['name', 'description']  # Указываем только те поля, которые должны быть доступны в форме

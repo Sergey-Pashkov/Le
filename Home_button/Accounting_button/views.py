@@ -1195,3 +1195,84 @@ def non_standard_operations_log_list(request):
         grouped_logs[log.owner].append(log)
     
     return render(request, 'Accounting_button/non_standard_operations_log/non_standard_operations_log_list.html', {'grouped_logs': grouped_logs})
+
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import ProtectedError
+from django.contrib import messages
+from .models import TypesOfIncome
+from .forms import TypesOfIncomeForm
+
+@login_required
+@permission_required('Accounting_button.add_typesofincome', raise_exception=True)
+def create_type_of_income(request):
+    """
+    Представление для создания нового типа дохода.
+    Доступно только авторизованным пользователям с правом добавления типов доходов.
+    """
+    if request.method == 'POST':
+        form = TypesOfIncomeForm(request.POST)
+        if form.is_valid():
+            type_of_income = form.save(commit=False)
+            type_of_income.owner = request.user  # Устанавливаем текущего пользователя как владельца
+            type_of_income.save()
+            return redirect('Accounting_button:types_of_income_list')
+    else:
+        form = TypesOfIncomeForm()
+    return render(request, 'Accounting_button/types_of_income/type_of_income_form.html', {'form': form})
+
+@login_required
+@permission_required('Accounting_button.view_typesofincome', raise_exception=True)
+def read_type_of_income(request, type_id):
+    """
+    Представление для отображения деталей типа дохода.
+    Доступно только авторизованным пользователям с правом просмотра типов доходов.
+    """
+    type_of_income = get_object_or_404(TypesOfIncome, id=type_id)
+    return render(request, 'Accounting_button/types_of_income/type_of_income_detail.html', {'type_of_income': type_of_income})
+
+@login_required
+@permission_required('Accounting_button.change_typesofincome', raise_exception=True)
+def update_type_of_income(request, type_id):
+    """
+    Представление для обновления существующего типа дохода.
+    Доступно только авторизованным пользователям с правом изменения типов доходов.
+    """
+    type_of_income = get_object_or_404(TypesOfIncome, id=type_id)
+    if request.method == 'POST':
+        form = TypesOfIncomeForm(request.POST, instance=type_of_income)
+        if form.is_valid():
+            form.save()
+            return redirect('Accounting_button:types_of_income_list')
+    else:
+        form = TypesOfIncomeForm(instance=type_of_income)
+    return render(request, 'Accounting_button/types_of_income/type_of_income_form.html', {'form': form, 'type_of_income': type_of_income})
+
+@login_required
+@permission_required('Accounting_button.delete_typesofincome', raise_exception=True)
+def delete_type_of_income(request, type_id):
+    """
+    Представление для удаления существующего типа дохода.
+    Доступно только авторизованным пользователям с правом удаления типов доходов.
+    """
+    type_of_income = get_object_or_404(TypesOfIncome, id=type_id)
+    if request.method == 'POST':
+        try:
+            type_of_income.delete()
+            messages.success(request, 'Тип дохода успешно удалён.')
+        except ProtectedError:
+            messages.error(request, 'Невозможно удалить этот тип дохода, так как он связан с другими записями.')
+        return redirect('Accounting_button:types_of_income_list')
+    return render(request, 'Accounting_button/types_of_income/type_of_income_confirm_delete.html', {'type_of_income': type_of_income})
+
+@login_required
+@permission_required('Accounting_button.view_typesofincome', raise_exception=True)
+def types_of_income_list(request):
+    """
+    Представление для отображения списка всех типов доходов.
+    Доступно только авторизованным пользователям с правом просмотра типов доходов.
+    """
+    types_of_income = TypesOfIncome.objects.all()
+    return render(request, 'Accounting_button/types_of_income/types_of_income_list.html', {'types_of_income': types_of_income})

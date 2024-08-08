@@ -123,4 +123,10 @@ urlpatterns = [
     path('non_standard_operations_log/<int:log_id>/update/', views.update_non_standard_operations_log, name='update_non_standard_operations_log'),
     # Путь для удаления записи
     path('non_standard_operations_log/<int:log_id>/delete/', views.delete_non_standard_operations_log, name='delete_non_standard_operations_log'),
+
+    path('types_of_income/', views.types_of_income_list, name='types_of_income_list'),
+    path('types_of_income/create/', views.create_type_of_income, name='create_type_of_income'),
+    path('types_of_income/<int:type_id>/', views.read_type_of_income, name='read_type_of_income'),
+    path('types_of_income/<int:type_id>/update/', views.update_type_of_income, name='update_type_of_income'),
+    path('types_of_income/<int:type_id>/delete/', views.delete_type_of_income, name='delete_type_of_income'),
 ]
