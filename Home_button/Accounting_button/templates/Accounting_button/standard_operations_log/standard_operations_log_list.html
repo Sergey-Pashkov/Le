@@ -9,25 +9,21 @@
         <a href="{% url 'Accounting_button:create_standard_operations_log' %}" class="btn btn-success mb-4">Добавить запись</a>  <!-- Кнопка для добавления новой записи -->
     {% endif %}
     {% for owner, logs in grouped_logs.items %}
-        <h3>{{ owner.username }}</h3>
+        <h3>{{ owner.username }}</h3>  <!-- Имя владельца записей -->
         <div class="list-group">
             {% for log in logs %}
                 <div class="list-group-item mb-2">
-                    <h5 class="mb-1">ID: {{ log.id }} - {{ log.client.short_title }}</h5>
-                    <p>Тип работы: {{ log.type_of_work.name }}</p>
-                    <p>Количество: {{ log.quantity }}</p>
-                    <p>Норма времени: {{ log.time_standard }} мин</p>
-                    <p>Тариф: {{ log.rate }} руб/мин</p>
-                    <p>Общее время: {{ log.all_the_time }} мин</p>
-                    <p>Стоимость: {{ log.price }} руб</p>
-                    <p>Дата: {{ log.date }}</p>
+                    <h5 class="mb-1">ID: {{ log.id }} - {{ log.client.short_title }}</h5>  <!-- ID записи и краткое название клиента -->
+                    <p>Тип работы: (ID: {{ log.type_of_work.id }}) {{ log.type_of_work.name }}</p>  <!-- ID типа работы и название типа работы -->
+                    <p>Стоимость: {{ log.price }} руб</p>  <!-- Стоимость работы -->
+                    <p>Дата: {{ log.date }}</p>  <!-- Дата записи -->
                     <div class="btn-group mt-2" role="group" aria-label="Log Actions">
-                        <a href="{% url 'Accounting_button:read_standard_operations_log' log.id %}" class="btn btn-secondary btn-sm mr-2">Подробнее</a>
+                        <a href="{% url 'Accounting_button:read_standard_operations_log' log.id %}" class="btn btn-secondary btn-sm mr-2">Подробнее</a>  <!-- Кнопка "Подробнее" -->
                         {% if log.owner == user and user|has_perm:"Accounting_button.change_standardoperationslog" %}
-                            <a href="{% url 'Accounting_button:update_standard_operations_log' log.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
+                            <a href="{% url 'Accounting_button:update_standard_operations_log' log.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>  <!-- Кнопка "Редактировать" -->
                         {% endif %}
                         {% if log.owner == user and user|has_perm:"Accounting_button.delete_standardoperationslog" %}
-                            <a href="{% url 'Accounting_button:delete_standard_operations_log' log.id %}" class="btn btn-danger btn-sm">Удалить</a>
+                            <a href="{% url 'Accounting_button:delete_standard_operations_log' log.id %}" class="btn btn-danger btn-sm">Удалить</a>  <!-- Кнопка "Удалить" -->
                         {% endif %}
                     </div>
                 </div>
