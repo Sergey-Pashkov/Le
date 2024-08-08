@@ -1078,3 +1078,108 @@ def standard_operations_log_list(request):
         grouped_logs[log.owner].append(log)
     
     return render(request, 'Accounting_button/standard_operations_log/standard_operations_log_list.html', {'grouped_logs': grouped_logs})
+
+
+
+
+
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from .models import NonStandardOperationsLog
+from .forms import NonStandardOperationsLogForm
+
+
+@login_required
+def create_non_standard_operations_log(request):
+    """
+    Представление для создания новой записи в журнале нестандартных операций.
+    Доступно только авторизованным пользователям.
+    """
+    if request.method == 'POST':
+        form = NonStandardOperationsLogForm(request.POST, request=request)
+        if form.is_valid():
+            non_standard_log = form.save(commit=False)
+            if not non_standard_log.owner:
+                non_standard_log.owner = request.user  # Устанавливаем владельца записи
+            non_standard_log.save()
+            return redirect('Accounting_button:non_standard_operations_log_list')
+    else:
+        form = NonStandardOperationsLogForm()
+        # Сортировка клиентов и тарифов по ID
+        form.fields['client'].queryset = form.fields['client'].queryset.order_by('id')
+        form.fields['rate'].queryset = form.fields['rate'].queryset.order_by('id')
+    return render(request, 'Accounting_button/non_standard_operations_log/non_standard_operations_log_form.html', {'form': form})
+
+
+
+
+
+
+
+@login_required
+def read_non_standard_operations_log(request, log_id):
+    """
+    Представление для отображения деталей записи в журнале нестандартных операций.
+    Доступно только авторизованным пользователям.
+    """
+    log = get_object_or_404(NonStandardOperationsLog, id=log_id)
+    return render(request, 'Accounting_button/non_standard_operations_log/non_standard_operations_log_detail.html', {'log': log})
+
+@login_required
+def update_non_standard_operations_log(request, log_id):
+    """
+    Представление для обновления существующей записи в журнале нестандартных операций.
+    Доступно только авторизованным пользователям.
+    """
+    log = get_object_or_404(NonStandardOperationsLog, id=log_id)
+    
+    if request.method == 'POST':
+        form = NonStandardOperationsLogForm(request.POST, instance=log, request=request)
+        if form.is_valid():
+            form.save()
+            return redirect('Accounting_button:non_standard_operations_log_list')
+    else:
+        form = NonStandardOperationsLogForm(instance=log)
+        # Сортировка клиентов и тарифов по ID
+        form.fields['client'].queryset = form.fields['client'].queryset.order_by('id')
+        form.fields['rate'].queryset = form.fields['rate'].queryset.order_by('id')
+    return render(request, 'Accounting_button/non_standard_operations_log/non_standard_operations_log_form.html', {'form': form, 'log': log})
+
+@login_required
+def delete_non_standard_operations_log(request, log_id):
+    """
+    Представление для удаления существующей записи в журнале нестандартных операций.
+    Доступно только авторизованным пользователям.
+    """
+    log = get_object_or_404(NonStandardOperationsLog, id=log_id)
+    
+    if request.method == 'POST':
+        try:
+            log.delete()
+            return redirect('Accounting_button:non_standard_operations_log_list')
+        except ProtectedError:
+            return render(request, 'Accounting_button/non_standard_operations_log/non_standard_operations_log_confirm_delete.html', {
+                'log': log,
+                'error_message': 'Невозможно удалить запись, так как она связана с другими записями.'
+            })
+    return render(request, 'Accounting_button/non_standard_operations_log/non_standard_operations_log_confirm_delete.html', {'log': log})
+
+@login_required
+def non_standard_operations_log_list(request):
+    """
+    Представление для отображения списка всех записей в журнале нестандартных операций,
+    сгруппированных по владельцу.
+    Доступно только авторизованным пользователям.
+    """
+    logs_by_owner = NonStandardOperationsLog.objects.all().order_by('owner')
+    
+    grouped_logs = {}
+    for log in logs_by_owner:
+        if log.owner not in grouped_logs:
+            grouped_logs[log.owner] = []
+        grouped_logs[log.owner].append(log)
+    
+    return render(request, 'Accounting_button/non_standard_operations_log/non_standard_operations_log_list.html', {'grouped_logs': grouped_logs})

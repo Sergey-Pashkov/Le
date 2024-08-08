@@ -257,18 +257,18 @@ class StandardOperationsLog(models.Model):
 
 
 
+
 from django.db import models
 from django.contrib.auth.models import User
-from .models import Clients, PerformersRates
 
 class NonStandardOperationsLog(models.Model):
     """
     Модель для хранения информации о нестандартных операциях.
     """
-    client = models.ForeignKey(Clients, on_delete=models.PROTECT, related_name='non_standard_operations_logs')
+    client = models.ForeignKey('Clients', on_delete=models.PROTECT, related_name='non_standard_operations_logs')
     content_of_the_work = models.TextField()
     duration = models.PositiveIntegerField()
-    rate = models.ForeignKey(PerformersRates, on_delete=models.PROTECT, related_name='non_standard_operations_logs')
+    rate = models.ForeignKey('PerformersRates', on_delete=models.PROTECT, related_name='non_standard_operations_logs')
     price = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
     date = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User, on_delete=models.PROTECT, related_name='non_standard_operations_logs')
@@ -280,6 +280,7 @@ class NonStandardOperationsLog(models.Model):
         ]
 
     def save(self, *args, **kwargs):
+        # Вычисляем цену как произведение продолжительности и тарифа
         self.price = self.duration * self.rate.cost_per_minute
         super().save(*args, **kwargs)
 

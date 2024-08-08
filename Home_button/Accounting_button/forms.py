@@ -115,3 +115,33 @@ class StandardOperationsLogForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
+
+
+
+
+
+
+from django import forms
+from .models import NonStandardOperationsLog
+
+class NonStandardOperationsLogForm(forms.ModelForm):
+    """
+    Форма для модели NonStandardOperationsLog.
+    """
+
+    class Meta:
+        model = NonStandardOperationsLog
+        fields = ['client', 'content_of_the_work', 'duration', 'rate']  # Указываем только те поля, которые должны быть доступны в форме
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)  # Получаем request из kwargs
+        super(NonStandardOperationsLogForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        instance = super(NonStandardOperationsLogForm, self).save(commit=False)
+        if self.request and not instance.owner_id:
+            instance.owner = self.request.user  # Устанавливаем владельца, если он не задан
+        if commit:
+            instance.save()
+        return instance

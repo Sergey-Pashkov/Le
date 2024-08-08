@@ -1,0 +1,50 @@
+{% extends "Accounting_button/base.html" %}
+{% load form_tags %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">{% if log %}Редактировать{% else %}Создать{% endif %} запись в журнале нестандартных операций</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <!-- Отображение ID записи, если запись существует -->
+        {% if log %}
+            <div class="form-group">
+                <label for="id_log">ID записи</label>
+                <input type="text" id="id_log" class="form-control" value="{{ log.id }}" readonly>
+            </div>
+        {% endif %}
+        <!-- Поле для выбора клиента -->
+        <div class="form-group">
+            <label for="id_client">Клиент</label>
+            <select id="id_client" name="client" class="form-control">
+                {% for client in form.fields.client.queryset %}
+                    <option value="{{ client.id }}" {% if client.id == form.client.value %}selected{% endif %}>ID: {{ client.id }} - {{ client.short_title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <!-- Поле для ввода содержания работы -->
+        <div class="form-group">
+            <label for="id_content_of_the_work">Содержание работы</label>
+            {{ form.content_of_the_work|add_class:"form-control" }}
+        </div>
+        <!-- Поле для ввода продолжительности -->
+        <div class="form-group">
+            <label for="id_duration">Продолжительность (мин.)</label>
+            {{ form.duration|add_class:"form-control" }}
+        </div>
+        <!-- Поле для выбора тарифа -->
+        <div class="form-group">
+            <label for="id_rate">Тариф</label>
+            <select id="id_rate" name="rate" class="form-control">
+                {% for rate in form.fields.rate.queryset %}
+                    <option value="{{ rate.id }}" {% if rate.id == form.rate.value %}selected{% endif %}>ID: {{ rate.id }} - {{ rate.cost_per_minute }} руб./мин.</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <!-- Кнопка для возврата в журнал -->
+        <a href="{% url 'Accounting_button:non_standard_operations_log_list' %}" class="btn btn-secondary ml-2">Вернуться в журнал</a>
+    </form>
+</div>
+{% endblock %}

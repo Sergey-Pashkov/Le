@@ -112,4 +112,15 @@ urlpatterns = [
     path('standard_operations_log/<int:log_id>/', views.read_standard_operations_log, name='read_standard_operations_log'),
     path('standard_operations_log/<int:log_id>/update/', views.update_standard_operations_log, name='update_standard_operations_log'),
     path('standard_operations_log/<int:log_id>/delete/', views.delete_standard_operations_log, name='delete_standard_operations_log'),
+
+    # Путь для списка нестандартных операций
+    path('non_standard_operations_log/', views.non_standard_operations_log_list, name='non_standard_operations_log_list'),
+    # Путь для создания новой записи
+    path('non_standard_operations_log/create/', views.create_non_standard_operations_log, name='create_non_standard_operations_log'),
+    # Путь для чтения записи
+    path('non_standard_operations_log/<int:log_id>/', views.read_non_standard_operations_log, name='read_non_standard_operations_log'),
+    # Путь для обновления записи
+    path('non_standard_operations_log/<int:log_id>/update/', views.update_non_standard_operations_log, name='update_non_standard_operations_log'),
+    # Путь для удаления записи
+    path('non_standard_operations_log/<int:log_id>/delete/', views.delete_non_standard_operations_log, name='delete_non_standard_operations_log'),
 ]

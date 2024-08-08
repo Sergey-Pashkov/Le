@@ -1,0 +1,22 @@
+{% extends "Accounting_button/base.html" %}
+{% load permissions %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Привет, {{ user.username }}!</h2>
+    <p>ID записи: {{ log.id }}</p>  <!-- ID записи на отдельной строке -->
+    <h1>ID: {{ log.client.id }} - {{ log.client.short_title }}</h1>
+    <p>Содержание работы: {{ log.content_of_the_work }}</p>
+    <p>Продолжительность: {{ log.duration }} мин.</p>
+    <p>Тариф: {{ log.rate.cost_per_minute }} руб./мин.</p>
+    <p>Стоимость: {{ log.price }} руб.</p>
+    <p>Дата: {{ log.date }}</p>
+    <p>Владелец: {{ log.owner.username }}</p>
+
+    <div class="d-flex mt-4">
+        <a href="{% url 'Accounting_button:update_non_standard_operations_log' log.id %}" class="btn btn-primary mr-2">Редактировать</a>
+        <a href="{% url 'Accounting_button:delete_non_standard_operations_log' log.id %}" class="btn btn-danger mr-2">Удалить</a>
+        <a href="{% url 'Accounting_button:non_standard_operations_log_list' %}" class="btn btn-secondary">Вернуться в журнал</a>
+    </div>
+</div>
+{% endblock %}
