@@ -2,6 +2,14 @@
 
 {% block content %}
 <h1>Вы уверены, что хотите удалить "ID: {{ client.id }} - {{ client.short_title }}"?</h1>
+
+<!-- Отображение сообщения об ошибке, если оно есть -->
+{% if error_message %}
+    <div class="alert alert-danger" role="alert">
+        {{ error_message }}
+    </div>
+{% endif %}
+
 <form method="post">
     {% csrf_token %}
     <button type="submit" class="btn btn-danger">Да, удалить</button>

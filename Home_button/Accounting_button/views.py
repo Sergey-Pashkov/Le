@@ -849,6 +849,13 @@ def update_client(request, client_id):
         form = ClientsForm(instance=client)
     return render(request, 'Accounting_button/clients/client_form.html', {'form': form, 'client': client})
 
+
+
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.decorators import login_required
+from django.db.models import ProtectedError
+from .models import Clients
+
 @login_required
 def delete_client(request, client_id):
     """
@@ -856,10 +863,22 @@ def delete_client(request, client_id):
     Доступно только авторизованным пользователям.
     """
     client = get_object_or_404(Clients, id=client_id)
+    error_message = None
+
     if request.method == 'POST':
-        client.delete()
-        return redirect('Accounting_button:clients_list')
-    return render(request, 'Accounting_button/clients/client_confirm_delete.html', {'client': client})
+        try:
+            client.delete()
+            return redirect('Accounting_button:clients_list')
+        except ProtectedError:
+            error_message = (
+                "Невозможно удалить клиента, так как существуют связанные записи в журнале стандартных операций."
+            )
+    
+    return render(request, 'Accounting_button/clients/client_confirm_delete.html', {'client': client, 'error_message': error_message})
+
+
+
+
 
 @login_required
 def clients_list(request):
