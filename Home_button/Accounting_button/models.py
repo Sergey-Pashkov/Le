@@ -307,3 +307,24 @@ class TypesOfIncome(models.Model):
 
     def __str__(self):
         return self.name  # Возвращает название при преобразовании объекта в строку
+
+
+
+from django.db import models
+from django.contrib.auth.models import User
+
+class TypesOfExpenses(models.Model):
+    """
+    Модель для хранения типов расходов.
+    """
+    name = models.CharField(max_length=255)  # Название
+    description = models.TextField()  # Описание
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='types_of_expenses')  # Владелец
+
+    def save(self, *args, **kwargs):
+        if not self.owner and 'owner' in kwargs:
+            self.owner = kwargs.pop('owner')
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name  # Возвращает название при преобразовании объекта в строку

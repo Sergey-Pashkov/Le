@@ -159,3 +159,16 @@ class TypesOfIncomeForm(forms.ModelForm):
     class Meta:
         model = TypesOfIncome
         fields = ['name', 'description']  # Указываем только те поля, которые должны быть доступны в форме
+
+
+from django import forms
+from .models import TypesOfExpenses
+
+class TypesOfExpensesForm(forms.ModelForm):
+    """
+    Форма для модели TypesOfExpenses.
+    """
+
+    class Meta:
+        model = TypesOfExpenses
+        fields = ['name', 'description']  # Убираем поле 'owner'

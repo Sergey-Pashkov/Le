@@ -129,4 +129,11 @@ urlpatterns = [
     path('types_of_income/<int:type_id>/', views.read_type_of_income, name='read_type_of_income'),
     path('types_of_income/<int:type_id>/update/', views.update_type_of_income, name='update_type_of_income'),
     path('types_of_income/<int:type_id>/delete/', views.delete_type_of_income, name='delete_type_of_income'),
+
+    # ... другие пути ...
+    path('types_of_expenses/', views.types_of_expenses_list, name='types_of_expenses_list'),
+    path('types_of_expenses/create/', views.create_type_of_expense, name='create_type_of_expense'),
+    path('types_of_expenses/<int:expense_id>/', views.read_type_of_expense, name='read_type_of_expense'),
+    path('types_of_expenses/<int:expense_id>/update/', views.update_type_of_expense, name='update_type_of_expense'),
+    path('types_of_expenses/<int:expense_id>/delete/', views.delete_type_of_expense, name='delete_type_of_expense'),
 ]

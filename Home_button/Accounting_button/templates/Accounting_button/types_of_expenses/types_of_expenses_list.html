@@ -1,0 +1,33 @@
+{% extends "Accounting_button/base.html" %}
+{% load permissions %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Типы Расходов</h2>
+    <p class="lead">Добро пожаловать, {{ user.username }}!</p> <!-- Приветствие пользователя -->
+
+    <div class="list-group">
+        {% for type_of_expense in types_of_expenses %}
+            <div class="list-group-item mb-2">
+                <h5 class="mb-1">{{ type_of_expense.name }}</h5>
+                <p class="mb-1">{{ type_of_expense.description }}</p>
+
+                {% if type_of_expense.id %}
+                    <div class="btn-group" role="group" aria-label="Expense Actions">
+                        {% if user|has_perm:"Accounting_button.change_typesofexpenses" %}
+                            <a href="{% url 'Accounting_button:update_type_of_expense' type_of_expense.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
+                        {% endif %}
+                        {% if user|has_perm:"Accounting_button.delete_typesofexpenses" %}
+                            <a href="{% url 'Accounting_button:delete_type_of_expense' type_of_expense.id %}" class="btn btn-danger btn-sm mr-2">Удалить</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if user|has_group:"Собственник" %}
+        <a href="{% url 'Accounting_button:create_type_of_expense' %}" class="btn btn-success mt-4">Добавить</a>
+    {% endif %}
+</div>
+{% endblock %}

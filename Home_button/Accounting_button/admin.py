@@ -166,3 +166,16 @@ from django.contrib import admin
 from .models import TypesOfIncome
 
 admin.site.register(TypesOfIncome)
+
+
+from django.contrib import admin
+from .models import TypesOfExpenses
+
+@admin.register(TypesOfExpenses)
+class TypesOfExpensesAdmin(admin.ModelAdmin):
+    """
+    Административная панель для модели TypesOfExpenses.
+    """
+    list_display = ('name', 'description', 'owner')  # Поля для отображения в списке
+    search_fields = ('name', 'description')  # Поля для поиска
+    list_filter = ('owner',)  # Фильтрация по владельцу

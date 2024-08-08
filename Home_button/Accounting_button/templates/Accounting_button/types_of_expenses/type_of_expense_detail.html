@@ -1,0 +1,19 @@
+<!-- Accounting_button/templates/Accounting_button/types_of_expenses/type_of_expense_detail.html -->
+{% extends "Accounting_button/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ type_of_expense.name }}</h1>
+    <p>{{ type_of_expense.description }}</p>
+    
+    <div class="d-flex mt-4">
+        {% if perms.Accounting_button.change_typesofexpenses %}
+            <a href="{% url 'Accounting_button:update_type_of_expense' type_of_expense.id %}" class="btn btn-primary mr-2">Редактировать</a>
+        {% endif %}
+        {% if perms.Accounting_button.delete_typesofexpenses %}
+            <a href="{% url 'Accounting_button:delete_type_of_expense' type_of_expense.id %}" class="btn btn-danger mr-2">Удалить</a>
+        {% endif %}
+        <a href="{% url 'Accounting_button:types_of_expenses_list' %}" class="btn btn-secondary">Вернуться к списку</a>
+    </div>
+</div>
+{% endblock %}

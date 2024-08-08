@@ -1276,3 +1276,59 @@ def types_of_income_list(request):
     """
     types_of_income = TypesOfIncome.objects.all()
     return render(request, 'Accounting_button/types_of_income/types_of_income_list.html', {'types_of_income': types_of_income})
+
+
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from .models import TypesOfExpenses
+from .forms import TypesOfExpensesForm
+
+@login_required
+@permission_required('Accounting_button.view_typesofexpenses', raise_exception=True)
+def types_of_expenses_list(request):
+    types_of_expenses = TypesOfExpenses.objects.all()
+    return render(request, 'Accounting_button/types_of_expenses/types_of_expenses_list.html', {'types_of_expenses': types_of_expenses})
+
+@login_required
+@permission_required('Accounting_button.view_typesofexpenses', raise_exception=True)
+def read_type_of_expense(request, expense_id):
+    type_of_expense = get_object_or_404(TypesOfExpenses, id=expense_id)
+    return render(request, 'Accounting_button/types_of_expenses/type_of_expense_detail.html', {'type_of_expense': type_of_expense})
+
+@login_required
+@permission_required('Accounting_button.add_typesofexpenses', raise_exception=True)
+def create_type_of_expense(request):
+    if request.method == 'POST':
+        form = TypesOfExpensesForm(request.POST)
+        if form.is_valid():
+            expense = form.save(commit=False)
+            expense.owner = request.user
+            expense.save()
+            return redirect('Accounting_button:types_of_expenses_list')
+    else:
+        form = TypesOfExpensesForm()
+    return render(request, 'Accounting_button/types_of_expenses/type_of_expense_form.html', {'form': form})
+
+@login_required
+@permission_required('Accounting_button.change_typesofexpenses', raise_exception=True)
+def update_type_of_expense(request, expense_id):
+    type_of_expense = get_object_or_404(TypesOfExpenses, id=expense_id)
+    if request.method == 'POST':
+        form = TypesOfExpensesForm(request.POST, instance=type_of_expense)
+        if form.is_valid():
+            form.save()
+            return redirect('Accounting_button:types_of_expenses_list')
+    else:
+        form = TypesOfExpensesForm(instance=type_of_expense)
+    return render(request, 'Accounting_button/types_of_expenses/type_of_expense_form.html', {'form': form, 'type_of_expense': type_of_expense})
+
+@login_required
+@permission_required('Accounting_button.delete_typesofexpenses', raise_exception=True)
+def delete_type_of_expense(request, expense_id):
+    type_of_expense = get_object_or_404(TypesOfExpenses, id=expense_id)
+    if request.method == 'POST':
+        type_of_expense.delete()
+        return redirect('Accounting_button:types_of_expenses_list')
+    return render(request, 'Accounting_button/types_of_expenses/type_of_expense_confirm_delete.html', {'type_of_expense': type_of_expense})
