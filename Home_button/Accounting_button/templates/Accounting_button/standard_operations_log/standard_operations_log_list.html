@@ -13,17 +13,26 @@
         <div class="list-group">
             {% for log in logs %}
                 <div class="list-group-item mb-2">
-                    <h5 class="mb-1">ID: {{ log.id }} - {{ log.client.short_title }}</h5>  <!-- ID записи и краткое название клиента -->
-                    <p>Тип работы: (ID: {{ log.type_of_work.id }}) {{ log.type_of_work.name }}</p>  <!-- ID типа работы и название типа работы -->
-                    <p>Стоимость: {{ log.price }} руб</p>  <!-- Стоимость работы -->
-                    <p>Дата: {{ log.date }}</p>  <!-- Дата записи -->
+                    <!-- ID записи на отдельной строке -->
+                    <p>ID записи: {{ log.id }}</p>
+                    <!-- ID клиента перед именем клиента -->
+                    <h5 class="mb-1">ID: {{ log.client.id }} - {{ log.client.short_title }}</h5>
+                    <!-- ID типа работы и название типа работы -->
+                    <p>Тип работы: (ID: {{ log.type_of_work.id }}) {{ log.type_of_work.name }}</p>
+                    <!-- Стоимость работы -->
+                    <p>Стоимость: {{ log.price }} руб</p>
+                    <!-- Дата записи -->
+                    <p>Дата: {{ log.date }}</p>
                     <div class="btn-group mt-2" role="group" aria-label="Log Actions">
-                        <a href="{% url 'Accounting_button:read_standard_operations_log' log.id %}" class="btn btn-secondary btn-sm mr-2">Подробнее</a>  <!-- Кнопка "Подробнее" -->
+                        <!-- Кнопка "Подробнее" -->
+                        <a href="{% url 'Accounting_button:read_standard_operations_log' log.id %}" class="btn btn-secondary btn-sm mr-2">Подробнее</a>
                         {% if log.owner == user and user|has_perm:"Accounting_button.change_standardoperationslog" %}
-                            <a href="{% url 'Accounting_button:update_standard_operations_log' log.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>  <!-- Кнопка "Редактировать" -->
+                            <!-- Кнопка "Редактировать" -->
+                            <a href="{% url 'Accounting_button:update_standard_operations_log' log.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
                         {% endif %}
                         {% if log.owner == user and user|has_perm:"Accounting_button.delete_standardoperationslog" %}
-                            <a href="{% url 'Accounting_button:delete_standard_operations_log' log.id %}" class="btn btn-danger btn-sm">Удалить</a>  <!-- Кнопка "Удалить" -->
+                            <!-- Кнопка "Удалить" -->
+                            <a href="{% url 'Accounting_button:delete_standard_operations_log' log.id %}" class="btn btn-danger btn-sm">Удалить</a>
                         {% endif %}
                     </div>
                 </div>

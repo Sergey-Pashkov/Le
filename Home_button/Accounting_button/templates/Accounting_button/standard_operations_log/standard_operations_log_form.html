@@ -7,19 +7,67 @@
 
     <form method="post">
         {% csrf_token %}
+        <!-- Отображение ID записи, если запись существует -->
+        {% if log %}
+            <div class="form-group">
+                <label for="id_log">ID записи</label>
+                <input type="text" id="id_log" class="form-control" value="{{ log.id }}" readonly>
+            </div>
+        {% endif %}
+        <!-- Поле для выбора клиента -->
         <div class="form-group">
             <label for="id_client">Клиент</label>
-            {{ form.client|add_class:"form-control" }}
+            <select id="id_client" name="client" class="form-control">
+                {% for client in form.fields.client.queryset %}
+                    <option value="{{ client.id }}" {% if client.id == form.client.value %}selected{% endif %}>ID: {{ client.id }} - {{ client.short_title }}</option>
+                {% endfor %}
+            </select>
         </div>
+        <!-- Поле для выбора типа работы -->
         <div class="form-group">
             <label for="id_type_of_work">Тип работы</label>
-            {{ form.type_of_work|add_class:"form-control" }}
+            <select id="id_type_of_work" name="type_of_work" class="form-control">
+                {% for work in form.fields.type_of_work.queryset %}
+                    <option value="{{ work.id }}" data-rate="{{ work.rate }}" {% if work.id == form.type_of_work.value %}selected{% endif %}>ID: {{ work.id }} - {{ work.name }}</option>
+                {% endfor %}
+            </select>
         </div>
+        <!-- Поле для ввода количества -->
         <div class="form-group">
             <label for="id_quantity">Количество</label>
-            {{ form.quantity|add_class:"form-control" }}
+            <input type="number" id="id_quantity" name="quantity" class="form-control" value="{{ form.quantity.value|default_if_none:0 }}">
         </div>
         <button type="submit" class="btn btn-primary">Сохранить</button>
+        <!-- Кнопка для возврата в журнал -->
+        <a href="{% url 'Accounting_button:standard_operations_log_list' %}" class="btn btn-secondary ml-2">Вернуться в журнал</a>
     </form>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var clientSelect = document.getElementById('id_client'); // Выбор клиента
+    var workSelect = document.getElementById('id_type_of_work'); // Выбор типа работы
+    var quantityInput = document.getElementById('id_quantity'); // Ввод количества
+
+    // Функция для обновления стоимости
+    function updatePrice() {
+        var selectedOption = workSelect.options[workSelect.selectedIndex]; // Получение выбранной опции типа работы
+        var rate = parseFloat(selectedOption.getAttribute('data-rate')); // Извлечение тарифа из атрибута data-rate
+        var quantity = parseFloat(quantityInput.value); // Получение введенного количества
+        
+        if (!isNaN(rate) && !isNaN(quantity)) { // Проверка, что тариф и количество - числа
+            var price = rate * quantity; // Расчет стоимости
+            // Здесь вы можете использовать price, если нужно его где-то отобразить
+        }
+    }
+
+    // Обработчики событий для обновления стоимости при изменении выбора клиента, типа работы и введенного количества
+    clientSelect.addEventListener('change', updatePrice);
+    workSelect.addEventListener('change', updatePrice);
+    quantityInput.addEventListener('input', updatePrice);
+
+    // Инициализация значений при загрузке страницы
+    updatePrice();
+});
+</script>
 {% endblock %}

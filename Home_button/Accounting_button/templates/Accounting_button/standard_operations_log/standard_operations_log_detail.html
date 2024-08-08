@@ -4,8 +4,11 @@
 {% block content %}
 <div class="container mt-4">
     <h2>Привет, {{ user.username }}!</h2>
-    <h1>ID: {{ log.id }} - {{ log.client.short_title }}</h1>
-    <p>Тип работы: (ID: {{ log.type_of_work.id }}) {{ log.type_of_work.name }}</p>  <!-- Стандартный ID работы перед наименованием -->
+    <!-- ID записи с комментарием на отдельной строке -->
+    <p>ID записи: {{ log.id }}</p>
+    <h1>ID: {{ log.client.id }} - {{ log.client.short_title }}</h1>
+    <!-- Стандартный ID работы перед наименованием -->
+    <p>Тип работы: (ID: {{ log.type_of_work.id }}) {{ log.type_of_work.name }}</p>
     <p>Количество: {{ log.quantity }}</p>
     <p>Норма времени: {{ log.time_standard }} мин.</p>
     <p>Тариф: {{ log.rate }} руб./мин.</p>
@@ -14,14 +17,18 @@
     <p>Дата: {{ log.date }}</p>
     <p>Владелец: {{ log.owner.username }}</p>
 
-    <div class="d-flex mt-4"> <!-- Использование d-flex для горизонтального выравнивания -->
+    <!-- Использование d-flex для горизонтального выравнивания -->
+    <div class="d-flex mt-4">
         {% if log.owner == user and user|has_perm:"Accounting_button.change_standardoperationslog" %}
-            <a href="{% url 'Accounting_button:update_standard_operations_log' log.id %}" class="btn btn-primary mr-2">Редактировать</a> <!-- Добавление класса mr-2 для отступа -->
+            <!-- Добавление класса mr-2 для отступа -->
+            <a href="{% url 'Accounting_button:update_standard_operations_log' log.id %}" class="btn btn-primary mr-2">Редактировать</a>
         {% endif %}
         {% if log.owner == user and user|has_perm:"Accounting_button.delete_standardoperationslog" %}
-            <a href="{% url 'Accounting_button:delete_standard_operations_log' log.id %}" class="btn btn-danger mr-2">Удалить</a> <!-- Добавление класса mr-2 для отступа -->
+            <!-- Добавление класса mr-2 для отступа -->
+            <a href="{% url 'Accounting_button:delete_standard_operations_log' log.id %}" class="btn btn-danger mr-2">Удалить</a>
         {% endif %}
-        <a href="{% url 'Accounting_button:standard_operations_log_list' %}" class="btn btn-secondary">Вернуться в журнал</a> <!-- Кнопка для возврата в журнал -->
+        <!-- Кнопка для возврата в журнал -->
+        <a href="{% url 'Accounting_button:standard_operations_log_list' %}" class="btn btn-secondary">Вернуться в журнал</a>
     </div>
 </div>
 {% endblock %}
