@@ -286,3 +286,24 @@ class NonStandardOperationsLog(models.Model):
 
     def __str__(self):
         return f"{self.client.short_title} - {self.content_of_the_work}"
+
+
+
+from django.db import models
+from django.contrib.auth.models import User
+
+class TypesOfIncome(models.Model):
+    """
+    Модель для хранения типов доходов.
+    """
+    name = models.CharField(max_length=255)  # Название
+    description = models.TextField()  # Описание
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='types_of_income')  # Владелец
+
+    def save(self, *args, **kwargs):
+        if not self.owner and 'owner' in kwargs:
+            self.owner = kwargs.pop('owner')
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name  # Возвращает название при преобразовании объекта в строку

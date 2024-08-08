@@ -160,3 +160,9 @@ class NonStandardOperationsLogAdmin(admin.ModelAdmin):
     list_display = ('client', 'content_of_the_work', 'duration', 'rate', 'price', 'date', 'owner')
     search_fields = ('client__short_title', 'content_of_the_work', 'owner__username')
     list_filter = ('date', 'client', 'owner')
+
+
+from django.contrib import admin
+from .models import TypesOfIncome
+
+admin.site.register(TypesOfIncome)
