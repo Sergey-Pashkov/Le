@@ -174,8 +174,14 @@ class TypesOfExpensesForm(forms.ModelForm):
         fields = ['name', 'description']  # Убираем поле 'owner'
 
 
+
+
+
 from django import forms
 from .models import IncomeJournal
+from django.utils import timezone
+from datetime import timedelta
+import calendar
 
 class IncomeJournalForm(forms.ModelForm):
     class Meta:
@@ -184,7 +190,38 @@ class IncomeJournalForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['client'].widget.attrs.update({'disabled': 'true'})  # Отключаем поле client по умолчанию
+
+        # Установка даты предыдущего рабочего дня по умолчанию
+        self.fields['date_of_event'].initial = self.get_previous_working_day()
+
+        # Обновление состояния поля client
+        self.update_client_field_state()
+
+    def get_previous_working_day(self):
+        """
+        Возвращает предыдущий рабочий день.
+        """
+        today = timezone.now().date()
+        previous_day = today - timedelta(days=1)
+        
+        # Если предыдущий день — это суббота или воскресенье, переместитесь к пятнице
+        if previous_day.weekday() == 5:  # Суббота
+            previous_day -= timedelta(days=1)
+        elif previous_day.weekday() == 6:  # Воскресенье
+            previous_day -= timedelta(days=2)
+        
+        return previous_day
+
+    def update_client_field_state(self):
+        """
+        Очищает и отключает поле client, если выбран тип дохода 'Займы'.
+        """
+        name = self.initial.get('name') or self.data.get('name')
+        if name:
+            name_instance = self.fields['name'].queryset.get(pk=name)
+            if name_instance.name == 'Займы':
+                self.fields['client'].widget.attrs.update({'disabled': 'true'})
+                self.initial['client'] = None
 
     def clean(self):
         cleaned_data = super().clean()
@@ -192,8 +229,9 @@ class IncomeJournalForm(forms.ModelForm):
         client = cleaned_data.get('client')
 
         if name and name.name == 'Займы':
-            cleaned_data['client'] = None  # Очищаем поле client, если выбрано "Займы"
-        elif not client and name and name.name != 'Займы':
-            raise forms.ValidationError("Поле 'Клиент' обязательно для заполнения, если не выбран 'Займы'.")
+            cleaned_data['client'] = None  # Очищаем поле client для "Займы"
+        
+        if cleaned_data.get('client') is None and name.name != 'Займы':
+            self.add_error('client', "Поле 'Клиент' не может быть пустым.")
         
         return cleaned_data

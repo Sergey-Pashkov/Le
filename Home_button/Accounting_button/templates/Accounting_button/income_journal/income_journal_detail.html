@@ -3,11 +3,35 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1>{{ journal.name }}</h1>
-    <p>Клиент: {{ journal.client }}</p>
-    <p>Сумма: {{ journal.value }}</p>
-    <p>Дата события: {{ journal.date_of_event }}</p>
-    <p>Комментарий: {{ journal.comment }}</p>
+    <h1>Детали записи журнала доходов</h1>
+
+    <div class="mb-3">
+        <strong>ID записи:</strong> {{ journal.id }}
+    </div>
+    <div class="mb-3">
+        <strong>Название дохода:</strong> {{ journal.name }}
+    </div>
+    <div class="mb-3">
+        <strong>Сумма:</strong> {{ journal.value }}
+    </div>
+    <div class="mb-3">
+        <strong>ID клиента:</strong> {{ journal.client.id }}
+    </div>
+    <div class="mb-3">
+        <strong>Клиент:</strong> {{ journal.client }}
+    </div>
+    <div class="mb-3">
+        <strong>Дата события:</strong> {{ journal.date_of_event }}
+    </div>
+    <div class="mb-3">
+        <strong>Дата записи:</strong> {{ journal.date }}
+    </div>
+    <div class="mb-3">
+        <strong>Комментарий:</strong> {{ journal.comment }}
+    </div>
+    <div class="mb-3">
+        <strong>Владелец записи:</strong> {{ journal.owner }}
+    </div>
 
     <div class="mt-4">
         {% if user|has_perm:"Accounting_button.change_incomejournal" %}

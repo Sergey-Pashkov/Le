@@ -3,57 +3,81 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">{% if journal %}Редактировать{% else %}Создать{% endif %} запись</h2>
+    <h2 class="mb-4">{% if journal %}Редактировать{% else %}Создать{% endif %} запись в журнале доходов</h2>
 
-    <form method="post" id="income-journal-form">
+    <form method="post">
         {% csrf_token %}
+        
+        <!-- Отображение ID записи, если запись существует -->
+        {% if journal %}
+            <div class="form-group">
+                <label for="id_journal">ID записи</label>
+                <input type="text" id="id_journal" class="form-control" value="{{ journal.id }}" readonly>
+            </div>
+        {% endif %}
+        
+        <!-- Поле для выбора названия дохода -->
         <div class="form-group">
-            <label for="id_name">Название</label>
+            <label for="id_name">Название дохода</label>
             {{ form.name|add_class:"form-control" }}
         </div>
+
+        <!-- Поле для выбора клиента -->
+        <div class="form-group">
+            <label for="id_client">Клиент</label>
+            <select id="id_client" name="client" class="form-control">
+                {% for client in form.fields.client.queryset %}
+                    <option value="{{ client.id }}" {% if client.id == form.client.value %}selected{% endif %}>ID: {{ client.id }} - {{ client.short_title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Поле для ввода суммы -->
         <div class="form-group">
             <label for="id_value">Сумма</label>
             {{ form.value|add_class:"form-control" }}
         </div>
-        <div class="form-group" id="client-group">
-            <label for="id_client">Клиент</label>
-            {{ form.client|add_class:"form-control" }}
-        </div>
+
+        <!-- Поле для ввода даты события с отображением месяца словами -->
         <div class="form-group">
             <label for="id_date_of_event">Дата события</label>
             {{ form.date_of_event|add_class:"form-control" }}
         </div>
+
+        <!-- Поле для ввода комментария -->
         <div class="form-group">
             <label for="id_comment">Комментарий</label>
             {{ form.comment|add_class:"form-control" }}
         </div>
+
+        <!-- Кнопка отправки формы -->
         <button type="submit" class="btn btn-primary">Сохранить</button>
-        <a href="{% url 'Accounting_button:income_journal_list' %}" class="btn btn-secondary ml-2">Отмена</a>
+
+        <!-- Кнопка возврата в список журнала доходов -->
+        <a href="{% url 'Accounting_button:income_journal_list' %}" class="btn btn-secondary ml-2">Вернуться в журнал</a>
     </form>
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const nameField = document.getElementById('id_name');
-        const clientField = document.getElementById('id_client');
-        const clientGroup = document.getElementById('client-group');
+document.addEventListener("DOMContentLoaded", function() {
+    var nameField = document.getElementById('id_name'); // Поле названия дохода
+    var clientSelect = document.getElementById('id_client'); // Поле выбора клиента
 
-        function toggleClientField() {
-            if (nameField.value === 'Займы') {
-                clientField.value = '';  // Очистка значения поля client
-                clientField.disabled = true;  // Отключаем поле client
-                clientGroup.style.display = 'none';  // Скрываем группу полей client
-            } else {
-                clientField.disabled = false;  // Включаем поле client
-                clientGroup.style.display = 'block';  // Показываем группу полей client
-            }
+    // Функция для управления доступностью поля клиента
+    function toggleClientField() {
+        if (nameField.options[nameField.selectedIndex].text === 'Займы') {
+            clientSelect.value = '';  // Очистка значения поля client
+            clientSelect.disabled = true;  // Отключаем поле client
+        } else {
+            clientSelect.disabled = false;  // Включаем поле client
         }
+    }
 
-        // Включаем/выключаем поле при загрузке страницы
-        toggleClientField();
+    // Включаем/выключаем поле при загрузке страницы
+    toggleClientField();
 
-        // Добавляем обработчик события на изменение поля name
-        nameField.addEventListener('change', toggleClientField);
-    });
+    // Добавляем обработчик события на изменение поля name
+    nameField.addEventListener('change', toggleClientField);
+});
 </script>
 {% endblock %}

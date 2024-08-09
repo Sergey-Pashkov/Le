@@ -331,18 +331,14 @@ class TypesOfExpenses(models.Model):
 
 
 
-
-from django.db import models
-from django.contrib.auth.models import User
-
 class IncomeJournal(models.Model):
     name = models.ForeignKey('TypesOfIncome', on_delete=models.PROTECT, related_name='income_journals')
     value = models.DecimalField(max_digits=10, decimal_places=2)
-    client = models.ForeignKey('Clients', on_delete=models.PROTECT, related_name='income_journals')
+    client = models.ForeignKey('Clients', on_delete=models.PROTECT, related_name='income_journals', blank=True, null=True)
     date_of_event = models.DateField()
     date = models.DateTimeField(auto_now_add=True)
     comment = models.TextField(blank=True, null=True)
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='income_journals')  # Уникальный related_name
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='income_journals')
 
     class Meta:
         indexes = [

@@ -1336,7 +1336,7 @@ def delete_type_of_expense(request, expense_id):
 
 
 
-# журнал доходов
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.timezone import now
@@ -1344,34 +1344,82 @@ from .models import IncomeJournal
 from .forms import IncomeJournalForm
 
 def is_current_month(date):
-    """ Проверяет, относится ли дата к текущему месяцу. """
+    """
+    Проверяет, относится ли дата к текущему месяцу.
+    Args:
+        date (datetime.date): Дата для проверки.
+    Returns:
+        bool: True, если дата в текущем месяце, иначе False.
+    """
     today = now().date()
     return date.year == today.year and date.month == today.month
+
+
+
+
+from django.db.models import Sum
+from django.utils.timezone import localdate
 
 @login_required
 @permission_required('Accounting_button.view_incomejournal', raise_exception=True)
 def income_journal_list(request):
-    """ Просмотр списка записей IncomeJournal за текущий месяц """
-    journals = IncomeJournal.objects.filter(date_of_event__month=now().month)
-    return render(request, 'Accounting_button/income_journal/income_journal_list.html', {'journals': journals})
+    """
+    Просмотр списка записей IncomeJournal за текущий месяц.
+    Фильтрует записи журнала доходов по текущему месяцу и отображает их в виде списка.
+    Записи упорядочиваются по ID. 
+    Также отображается информация о количестве записей за сегодняшний день, итоговой сумме и статистика по займам.
+    """
+    today = localdate()  # Получаем текущую дату
+    journals = IncomeJournal.objects.filter(date_of_event__month=now().month).order_by('id')
+
+    # Количество и сумма записей за сегодняшний день
+    today_count = IncomeJournal.objects.filter(date__date=today).count()
+    today_sum = IncomeJournal.objects.filter(date__date=today).aggregate(Sum('value'))['value__sum'] or 0
+
+    # Количество и сумма по займам за сегодняшний день
+    loans_count = IncomeJournal.objects.filter(date__date=today, name__name="Займы").count()
+    loans_sum = IncomeJournal.objects.filter(date__date=today, name__name="Займы").aggregate(Sum('value'))['value__sum'] or 0
+
+    return render(request, 'Accounting_button/income_journal/income_journal_list.html', {
+        'journals': journals,
+        'today_count': today_count,
+        'today_sum': today_sum,
+        'loans_count': loans_count,
+        'loans_sum': loans_sum,
+    })
+
+
 
 @login_required
 @permission_required('Accounting_button.view_incomejournal', raise_exception=True)
 def read_income_journal(request, journal_id):
-    """ Просмотр деталей конкретной записи IncomeJournal """
+    """
+    Просмотр деталей конкретной записи IncomeJournal.
+
+    Проверяет, относится ли запись к текущему месяцу. Если нет, перенаправляет на список записей.
+    """
     journal = get_object_or_404(IncomeJournal, id=journal_id)
     if not is_current_month(journal.date_of_event):
         return redirect('Accounting_button:income_journal_list')
     return render(request, 'Accounting_button/income_journal/income_journal_detail.html', {'journal': journal})
 
+
+
+
+
+
 @login_required
 @permission_required('Accounting_button.add_incomejournal', raise_exception=True)
 def create_income_journal(request):
-    """ Создание новой записи IncomeJournal """
+    """
+    Создание новой записи IncomeJournal.
+    """
     if request.method == 'POST':
         form = IncomeJournalForm(request.POST)
         if form.is_valid():
             journal = form.save(commit=False)
+            if journal.name.name == 'Займы':
+                journal.client = None  # Очищаем поле client, если выбрано "Займы"
             journal.owner = request.user  # Автоматическое заполнение поля owner текущим пользователем
             journal.save()
             return redirect('Accounting_button:income_journal_list')
@@ -1382,7 +1430,9 @@ def create_income_journal(request):
 @login_required
 @permission_required('Accounting_button.change_incomejournal', raise_exception=True)
 def update_income_journal(request, journal_id):
-    """ Редактирование существующей записи IncomeJournal """
+    """
+    Редактирование существующей записи IncomeJournal.
+    """
     journal = get_object_or_404(IncomeJournal, id=journal_id)
     if not is_current_month(journal.date_of_event):
         return redirect('Accounting_button:income_journal_list')
@@ -1390,16 +1440,36 @@ def update_income_journal(request, journal_id):
     if request.method == 'POST':
         form = IncomeJournalForm(request.POST, instance=journal)
         if form.is_valid():
-            form.save()
+            journal = form.save(commit=False)
+            if journal.name.name == 'Займы':
+                journal.client = None  # Очищаем поле client, если выбрано "Займы"
+            journal.save()
             return redirect('Accounting_button:income_journal_list')
     else:
         form = IncomeJournalForm(instance=journal)
     return render(request, 'Accounting_button/income_journal/income_journal_form.html', {'form': form, 'journal': journal})
 
+
+
+
+
+
+
+
+
+
+
+
+
 @login_required
 @permission_required('Accounting_button.delete_incomejournal', raise_exception=True)
 def delete_income_journal(request, journal_id):
-    """ Удаление записи IncomeJournal """
+    """
+    Удаление записи IncomeJournal.
+
+    Позволяет удалить запись, если она относится к текущему месяцу.
+    В случае ошибки защищенного удаления, выводит сообщение об ошибке.
+    """
     journal = get_object_or_404(IncomeJournal, id=journal_id)
     if not is_current_month(journal.date_of_event):
         return redirect('Accounting_button:income_journal_list')
