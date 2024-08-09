@@ -1324,14 +1324,27 @@ def update_type_of_expense(request, expense_id):
         form = TypesOfExpensesForm(instance=type_of_expense)
     return render(request, 'Accounting_button/types_of_expenses/type_of_expense_form.html', {'form': form, 'type_of_expense': type_of_expense})
 
+
+
+
+
+from django.contrib import messages
+from django.db.models import ProtectedError
+
 @login_required
 @permission_required('Accounting_button.delete_typesofexpenses', raise_exception=True)
 def delete_type_of_expense(request, expense_id):
     type_of_expense = get_object_or_404(TypesOfExpenses, id=expense_id)
     if request.method == 'POST':
-        type_of_expense.delete()
-        return redirect('Accounting_button:types_of_expenses_list')
+        try:
+            type_of_expense.delete()
+            messages.success(request, 'Тип расхода успешно удален.')
+            return redirect('Accounting_button:types_of_expenses_list')
+        except ProtectedError as e:
+            messages.error(request, f'Невозможно удалить "{type_of_expense.name}", так как он связан с записями в модели "ExpenseJournal".')
+            return redirect('Accounting_button:read_type_of_expense', expense_id=expense_id)
     return render(request, 'Accounting_button/types_of_expenses/type_of_expense_confirm_delete.html', {'type_of_expense': type_of_expense})
+
 
 
 
