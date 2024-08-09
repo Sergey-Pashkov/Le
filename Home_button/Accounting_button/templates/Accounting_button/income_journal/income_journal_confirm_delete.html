@@ -1,0 +1,14 @@
+{% extends "Accounting_button/base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h1>Вы уверены, что хотите удалить запись "{{ journal.name }}"?</h1>
+    {% if error_message %}
+        <div class="alert alert-danger">{{ error_message }}</div>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Да, удалить</button>
+        <a href="{% url 'Accounting_button:read_income_journal' journal.id %}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

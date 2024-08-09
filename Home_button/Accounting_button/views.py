@@ -1332,3 +1332,83 @@ def delete_type_of_expense(request, expense_id):
         type_of_expense.delete()
         return redirect('Accounting_button:types_of_expenses_list')
     return render(request, 'Accounting_button/types_of_expenses/type_of_expense_confirm_delete.html', {'type_of_expense': type_of_expense})
+
+
+
+
+# журнал доходов
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from django.utils.timezone import now
+from .models import IncomeJournal
+from .forms import IncomeJournalForm
+
+def is_current_month(date):
+    """ Проверяет, относится ли дата к текущему месяцу. """
+    today = now().date()
+    return date.year == today.year and date.month == today.month
+
+@login_required
+@permission_required('Accounting_button.view_incomejournal', raise_exception=True)
+def income_journal_list(request):
+    """ Просмотр списка записей IncomeJournal за текущий месяц """
+    journals = IncomeJournal.objects.filter(date_of_event__month=now().month)
+    return render(request, 'Accounting_button/income_journal/income_journal_list.html', {'journals': journals})
+
+@login_required
+@permission_required('Accounting_button.view_incomejournal', raise_exception=True)
+def read_income_journal(request, journal_id):
+    """ Просмотр деталей конкретной записи IncomeJournal """
+    journal = get_object_or_404(IncomeJournal, id=journal_id)
+    if not is_current_month(journal.date_of_event):
+        return redirect('Accounting_button:income_journal_list')
+    return render(request, 'Accounting_button/income_journal/income_journal_detail.html', {'journal': journal})
+
+@login_required
+@permission_required('Accounting_button.add_incomejournal', raise_exception=True)
+def create_income_journal(request):
+    """ Создание новой записи IncomeJournal """
+    if request.method == 'POST':
+        form = IncomeJournalForm(request.POST)
+        if form.is_valid():
+            journal = form.save(commit=False)
+            journal.owner = request.user  # Автоматическое заполнение поля owner текущим пользователем
+            journal.save()
+            return redirect('Accounting_button:income_journal_list')
+    else:
+        form = IncomeJournalForm()
+    return render(request, 'Accounting_button/income_journal/income_journal_form.html', {'form': form})
+
+@login_required
+@permission_required('Accounting_button.change_incomejournal', raise_exception=True)
+def update_income_journal(request, journal_id):
+    """ Редактирование существующей записи IncomeJournal """
+    journal = get_object_or_404(IncomeJournal, id=journal_id)
+    if not is_current_month(journal.date_of_event):
+        return redirect('Accounting_button:income_journal_list')
+
+    if request.method == 'POST':
+        form = IncomeJournalForm(request.POST, instance=journal)
+        if form.is_valid():
+            form.save()
+            return redirect('Accounting_button:income_journal_list')
+    else:
+        form = IncomeJournalForm(instance=journal)
+    return render(request, 'Accounting_button/income_journal/income_journal_form.html', {'form': form, 'journal': journal})
+
+@login_required
+@permission_required('Accounting_button.delete_incomejournal', raise_exception=True)
+def delete_income_journal(request, journal_id):
+    """ Удаление записи IncomeJournal """
+    journal = get_object_or_404(IncomeJournal, id=journal_id)
+    if not is_current_month(journal.date_of_event):
+        return redirect('Accounting_button:income_journal_list')
+
+    if request.method == 'POST':
+        try:
+            journal.delete()
+            return redirect('Accounting_button:income_journal_list')
+        except models.ProtectedError:
+            error_message = "Невозможно удалить запись, так как она связана с другими объектами."
+            return render(request, 'Accounting_button/income_journal/income_journal_confirm_delete.html', {'journal': journal, 'error_message': error_message})
+    return render(request, 'Accounting_button/income_journal/income_journal_confirm_delete.html', {'journal': journal})

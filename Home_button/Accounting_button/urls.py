@@ -124,16 +124,24 @@ urlpatterns = [
     # Путь для удаления записи
     path('non_standard_operations_log/<int:log_id>/delete/', views.delete_non_standard_operations_log, name='delete_non_standard_operations_log'),
 
+      # виды доходов
     path('types_of_income/', views.types_of_income_list, name='types_of_income_list'),
     path('types_of_income/create/', views.create_type_of_income, name='create_type_of_income'),
     path('types_of_income/<int:type_id>/', views.read_type_of_income, name='read_type_of_income'),
     path('types_of_income/<int:type_id>/update/', views.update_type_of_income, name='update_type_of_income'),
     path('types_of_income/<int:type_id>/delete/', views.delete_type_of_income, name='delete_type_of_income'),
 
-    # ... другие пути ...
+    # виды расходов
     path('types_of_expenses/', views.types_of_expenses_list, name='types_of_expenses_list'),
     path('types_of_expenses/create/', views.create_type_of_expense, name='create_type_of_expense'),
     path('types_of_expenses/<int:expense_id>/', views.read_type_of_expense, name='read_type_of_expense'),
     path('types_of_expenses/<int:expense_id>/update/', views.update_type_of_expense, name='update_type_of_expense'),
     path('types_of_expenses/<int:expense_id>/delete/', views.delete_type_of_expense, name='delete_type_of_expense'),
+
+    # журнал доходов
+    path('income_journal/', views.income_journal_list, name='income_journal_list'),
+    path('income_journal/create/', views.create_income_journal, name='create_income_journal'),
+    path('income_journal/<int:journal_id>/', views.read_income_journal, name='read_income_journal'),
+    path('income_journal/<int:journal_id>/update/', views.update_income_journal, name='update_income_journal'),
+    path('income_journal/<int:journal_id>/delete/', views.delete_income_journal, name='delete_income_journal'),
 ]

@@ -1,0 +1,22 @@
+{% extends "Accounting_button/base.html" %}
+{% load permissions %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ journal.name }}</h1>
+    <p>Клиент: {{ journal.client }}</p>
+    <p>Сумма: {{ journal.value }}</p>
+    <p>Дата события: {{ journal.date_of_event }}</p>
+    <p>Комментарий: {{ journal.comment }}</p>
+
+    <div class="mt-4">
+        {% if user|has_perm:"Accounting_button.change_incomejournal" %}
+            <a href="{% url 'Accounting_button:update_income_journal' journal.id %}" class="btn btn-primary">Редактировать</a>
+        {% endif %}
+        {% if user|has_perm:"Accounting_button.delete_incomejournal" %}
+            <a href="{% url 'Accounting_button:delete_income_journal' journal.id %}" class="btn btn-danger">Удалить</a>
+        {% endif %}
+        <a href="{% url 'Accounting_button:income_journal_list' %}" class="btn btn-secondary">Вернуться к списку</a>
+    </div>
+</div>
+{% endblock %}

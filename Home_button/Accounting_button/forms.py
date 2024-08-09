@@ -172,3 +172,28 @@ class TypesOfExpensesForm(forms.ModelForm):
     class Meta:
         model = TypesOfExpenses
         fields = ['name', 'description']  # Убираем поле 'owner'
+
+
+from django import forms
+from .models import IncomeJournal
+
+class IncomeJournalForm(forms.ModelForm):
+    class Meta:
+        model = IncomeJournal
+        fields = ['name', 'value', 'client', 'date_of_event', 'comment']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['client'].widget.attrs.update({'disabled': 'true'})  # Отключаем поле client по умолчанию
+
+    def clean(self):
+        cleaned_data = super().clean()
+        name = cleaned_data.get('name')
+        client = cleaned_data.get('client')
+
+        if name and name.name == 'Займы':
+            cleaned_data['client'] = None  # Очищаем поле client, если выбрано "Займы"
+        elif not client and name and name.name != 'Займы':
+            raise forms.ValidationError("Поле 'Клиент' обязательно для заполнения, если не выбран 'Займы'.")
+        
+        return cleaned_data

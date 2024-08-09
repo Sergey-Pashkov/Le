@@ -1,0 +1,33 @@
+{% extends "Accounting_button/base.html" %}
+{% load permissions %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Журнал доходов</h2>
+    <p>Добро пожаловать, {{ user.username }}!</p>
+
+    <div class="list-group">
+        {% for journal in journals %}
+            <div class="list-group-item mb-2">
+                <h5 class="mb-1">{{ journal.name }}</h5>
+                <p class="mb-1">{{ journal.client }}</p>
+                <p class="mb-1">{{ journal.value }}</p>
+
+                <div class="btn-group mt-2" role="group" aria-label="Journal Actions">
+                    <a href="{% url 'Accounting_button:read_income_journal' journal.id %}" class="btn btn-secondary btn-sm mr-2">Просмотр</a>
+                    {% if user|has_perm:"Accounting_button.change_incomejournal" %}
+                        <a href="{% url 'Accounting_button:update_income_journal' journal.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
+                    {% endif %}
+                    {% if user|has_perm:"Accounting_button.delete_incomejournal" %}
+                        <a href="{% url 'Accounting_button:delete_income_journal' journal.id %}" class="btn btn-danger btn-sm">Удалить</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if user|has_perm:"Accounting_button.add_incomejournal" %}
+        <a href="{% url 'Accounting_button:create_income_journal' %}" class="btn btn-success mt-4">Добавить запись</a>
+    {% endif %}
+</div>
+{% endblock %}
