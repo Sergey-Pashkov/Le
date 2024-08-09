@@ -179,3 +179,33 @@ class TypesOfExpensesAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'owner')  # Поля для отображения в списке
     search_fields = ('name', 'description')  # Поля для поиска
     list_filter = ('owner',)  # Фильтрация по владельцу
+
+
+
+from django.contrib import admin
+from .models import IncomeJournal
+
+@admin.register(IncomeJournal)
+class IncomeJournalAdmin(admin.ModelAdmin):
+    list_display = ('name', 'value', 'client', 'date_of_event', 'date', 'owner')
+    search_fields = ('name__name', 'client__short_title', 'owner__username')
+    list_filter = ('date_of_event', 'client', 'owner')
+    date_hierarchy = 'date_of_event'
+    ordering = ('-date',)
+
+    def get_queryset(self, request):
+        """
+        Переопределение метода для фильтрации записей в зависимости от пользователя.
+        """
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(owner=request.user)
+
+    def save_model(self, request, obj, form, change):
+        """
+        Автоматическое заполнение поля owner текущим пользователем.
+        """
+        if not obj.owner:
+            obj.owner = request.user
+        obj.save()

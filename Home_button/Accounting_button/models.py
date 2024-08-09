@@ -328,3 +328,27 @@ class TypesOfExpenses(models.Model):
 
     def __str__(self):
         return self.name  # Возвращает название при преобразовании объекта в строку
+
+
+
+
+from django.db import models
+from django.contrib.auth.models import User
+
+class IncomeJournal(models.Model):
+    name = models.ForeignKey('TypesOfIncome', on_delete=models.PROTECT, related_name='income_journals')
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+    client = models.ForeignKey('Clients', on_delete=models.PROTECT, related_name='income_journals')
+    date_of_event = models.DateField()
+    date = models.DateTimeField(auto_now_add=True)
+    comment = models.TextField(blank=True, null=True)
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='income_journals')  # Уникальный related_name
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['date_of_event']),
+            models.Index(fields=['client']),
+        ]
+
+    def __str__(self):
+        return f"{self.name} - {self.client} - {self.value}"
