@@ -144,4 +144,11 @@ urlpatterns = [
     path('income_journal/<int:journal_id>/', views.read_income_journal, name='read_income_journal'),
     path('income_journal/<int:journal_id>/update/', views.update_income_journal, name='update_income_journal'),
     path('income_journal/<int:journal_id>/delete/', views.delete_income_journal, name='delete_income_journal'),
+
+    # Журнал расходов
+    path('expense_journal/', views.expense_journal_list, name='expense_journal_list'),
+    path('expense_journal/create/', views.create_expense_journal, name='create_expense_journal'),
+    path('expense_journal/<int:journal_id>/', views.read_expense_journal, name='read_expense_journal'),
+    path('expense_journal/<int:journal_id>/update/', views.update_expense_journal, name='update_expense_journal'),
+    path('expense_journal/<int:journal_id>/delete/', views.delete_expense_journal, name='delete_expense_journal'),
 ]

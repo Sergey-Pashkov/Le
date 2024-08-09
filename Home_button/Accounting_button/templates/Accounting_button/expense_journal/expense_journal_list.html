@@ -1,0 +1,45 @@
+{% extends "Accounting_button/base.html" %}
+{% load permissions %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Журнал расходов</h2>
+    <p>Добро пожаловать, {{ user.username }}!</p>
+
+    <!-- Информация о сегодняшних записях и итоговых суммах -->
+    <div class="alert alert-info">
+        <p>Сегодня введено записей: <strong>{{ today_count }}</strong></p>
+        <p>Итоговая сумма за сегодня: <strong>{{ today_sum }} руб.</strong></p>
+    </div>
+
+    <div class="list-group">
+        {% for journal in journals %}
+            <div class="list-group-item mb-2">
+                <h5 class="mb-1">ID записи: {{ journal.id }}</h5>
+                <p class="mb-1"><strong>Название расхода:</strong> {{ journal.name }}</p>
+                <p class="mb-1"><strong>Сумма:</strong> {{ journal.value }} руб.</p>
+                <p class="mb-1"><strong>Дата события:</strong> {{ journal.date_of_event|date:"j F Y" }}</p>
+                <p class="mb-1"><strong>Дата записи:</strong> {{ journal.date|date:"j F Y, H:i" }}</p>
+                
+                {% if journal.comment %}
+                    <p class="mb-1"><strong>Комментарий:</strong> {{ journal.comment|truncatewords:10 }}</p>
+                {% endif %}
+
+                <div class="btn-group mt-2" role="group" aria-label="Journal Actions">
+                    <a href="{% url 'Accounting_button:read_expense_journal' journal.id %}" class="btn btn-secondary btn-sm mr-2">Просмотр</a>
+                    {% if user|has_perm:"Accounting_button.change_expensejournal" %}
+                        <a href="{% url 'Accounting_button:update_expense_journal' journal.id %}" class="btn btn-primary btn-sm mr-2">Редактировать</a>
+                    {% endif %}
+                    {% if user|has_perm:"Accounting_button.delete_expensejournal" %}
+                        <a href="{% url 'Accounting_button:delete_expense_journal' journal.id %}" class="btn btn-danger btn-sm">Удалить</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if user|has_perm:"Accounting_button.add_expensejournal" %}
+        <a href="{% url 'Accounting_button:create_expense_journal' %}" class="btn btn-success mt-4">Добавить запись</a>
+    {% endif %}
+</div>
+{% endblock %}

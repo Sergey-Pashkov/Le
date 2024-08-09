@@ -176,7 +176,7 @@ class TypesOfExpensesForm(forms.ModelForm):
 
 
 
-
+# Журнал доходов
 from django import forms
 from .models import IncomeJournal
 from django.utils import timezone
@@ -235,3 +235,29 @@ class IncomeJournalForm(forms.ModelForm):
             self.add_error('client', "Поле 'Клиент' не может быть пустым.")
         
         return cleaned_data
+
+
+#журнал расходов
+from django import forms
+from .models import ExpenseJournal
+from django.utils import timezone
+from datetime import timedelta
+
+class ExpenseJournalForm(forms.ModelForm):
+    class Meta:
+        model = ExpenseJournal
+        fields = ['name', 'value', 'date_of_event', 'comment']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['date_of_event'].initial = self.get_previous_working_day()
+
+    def get_previous_working_day(self):
+        """ Возвращает предыдущий рабочий день. """
+        today = timezone.now().date()
+        previous_day = today - timedelta(days=1)
+        
+        while previous_day.weekday() > 4:  # Если суббота или воскресенье
+            previous_day -= timedelta(days=1)
+        
+        return previous_day

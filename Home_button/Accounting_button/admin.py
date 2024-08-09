@@ -209,3 +209,14 @@ class IncomeJournalAdmin(admin.ModelAdmin):
         if not obj.owner:
             obj.owner = request.user
         obj.save()
+
+
+
+from django.contrib import admin
+from .models import ExpenseJournal
+
+@admin.register(ExpenseJournal)
+class ExpenseJournalAdmin(admin.ModelAdmin):
+    list_display = ('name', 'value', 'date_of_event', 'date', 'owner')
+    search_fields = ('name__name', 'owner__username')
+    list_filter = ('date_of_event',)

@@ -1336,7 +1336,7 @@ def delete_type_of_expense(request, expense_id):
 
 
 
-
+# Журнал доходов
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.timezone import now
@@ -1388,8 +1388,6 @@ def income_journal_list(request):
         'loans_sum': loans_sum,
     })
 
-
-
 @login_required
 @permission_required('Accounting_button.view_incomejournal', raise_exception=True)
 def read_income_journal(request, journal_id):
@@ -1402,11 +1400,6 @@ def read_income_journal(request, journal_id):
     if not is_current_month(journal.date_of_event):
         return redirect('Accounting_button:income_journal_list')
     return render(request, 'Accounting_button/income_journal/income_journal_detail.html', {'journal': journal})
-
-
-
-
-
 
 @login_required
 @permission_required('Accounting_button.add_incomejournal', raise_exception=True)
@@ -1449,18 +1442,6 @@ def update_income_journal(request, journal_id):
         form = IncomeJournalForm(instance=journal)
     return render(request, 'Accounting_button/income_journal/income_journal_form.html', {'form': form, 'journal': journal})
 
-
-
-
-
-
-
-
-
-
-
-
-
 @login_required
 @permission_required('Accounting_button.delete_incomejournal', raise_exception=True)
 def delete_income_journal(request, journal_id):
@@ -1482,3 +1463,95 @@ def delete_income_journal(request, journal_id):
             error_message = "Невозможно удалить запись, так как она связана с другими объектами."
             return render(request, 'Accounting_button/income_journal/income_journal_confirm_delete.html', {'journal': journal, 'error_message': error_message})
     return render(request, 'Accounting_button/income_journal/income_journal_confirm_delete.html', {'journal': journal})
+
+
+
+
+#Журнал расходов
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from django.utils.timezone import now, localdate
+from django.db.models import Sum
+from django.contrib.auth.models import Group
+from .models import ExpenseJournal
+from .forms import ExpenseJournalForm
+
+def is_current_month(date):
+    """ Проверяет, относится ли дата к текущему месяцу. """
+    today = now().date()
+    return date.year == today.year and date.month == today.month
+
+@login_required
+@permission_required('Accounting_button.view_expensejournal', raise_exception=True)
+def expense_journal_list(request):
+    """ Просмотр списка записей ExpenseJournal за текущий месяц. """
+    journals = ExpenseJournal.objects.filter(date_of_event__month=now().month).order_by('id')
+
+    # Количество и сумма записей за сегодняшний день
+    today = localdate()
+    today_count = ExpenseJournal.objects.filter(date__date=today).count()
+    today_sum = ExpenseJournal.objects.filter(date__date=today).aggregate(Sum('value'))['value__sum'] or 0
+
+    return render(request, 'Accounting_button/expense_journal/expense_journal_list.html', {
+        'journals': journals,
+        'today_count': today_count,
+        'today_sum': today_sum,
+    })
+
+@login_required
+@permission_required('Accounting_button.view_expensejournal', raise_exception=True)
+def read_expense_journal(request, journal_id):
+    """ Просмотр деталей конкретной записи ExpenseJournal. """
+    journal = get_object_or_404(ExpenseJournal, id=journal_id)
+    if not is_current_month(journal.date_of_event):
+        return redirect('Accounting_button:expense_journal_list')
+    return render(request, 'Accounting_button/expense_journal/expense_journal_detail.html', {'journal': journal})
+
+@login_required
+@permission_required('Accounting_button.add_expensejournal', raise_exception=True)
+def create_expense_journal(request):
+    """ Создание новой записи ExpenseJournal. """
+    if request.method == 'POST':
+        form = ExpenseJournalForm(request.POST)
+        if form.is_valid():
+            journal = form.save(commit=False)
+            journal.owner = request.user
+            journal.save()
+            return redirect('Accounting_button:expense_journal_list')
+    else:
+        form = ExpenseJournalForm()
+    return render(request, 'Accounting_button/expense_journal/expense_journal_form.html', {'form': form})
+
+@login_required
+@permission_required('Accounting_button.change_expensejournal', raise_exception=True)
+def update_expense_journal(request, journal_id):
+    """ Редактирование существующей записи ExpenseJournal. """
+    journal = get_object_or_404(ExpenseJournal, id=journal_id)
+    if not is_current_month(journal.date_of_event):
+        return redirect('Accounting_button:expense_journal_list')
+
+    if request.method == 'POST':
+        form = ExpenseJournalForm(request.POST, instance=journal)
+        if form.is_valid():
+            form.save()
+            return redirect('Accounting_button:expense_journal_list')
+    else:
+        form = ExpenseJournalForm(instance=journal)
+    return render(request, 'Accounting_button/expense_journal/expense_journal_form.html', {'form': form, 'journal': journal})
+
+@login_required
+@permission_required('Accounting_button.delete_expensejournal', raise_exception=True)
+def delete_expense_journal(request, journal_id):
+    """ Удаление записи ExpenseJournal. """
+    journal = get_object_or_404(ExpenseJournal, id=journal_id)
+    if not is_current_month(journal.date_of_event):
+        return redirect('Accounting_button:expense_journal_list')
+
+    if request.method == 'POST':
+        try:
+            journal.delete()
+            return redirect('Accounting_button:expense_journal_list')
+        except models.ProtectedError:
+            error_message = "Невозможно удалить запись, так как она связана с другими объектами."
+            return render(request, 'Accounting_button/expense_journal/expense_journal_confirm_delete.html', {'journal': journal, 'error_message': error_message})
+    return render(request, 'Accounting_button/expense_journal/expense_journal_confirm_delete.html', {'journal': journal})

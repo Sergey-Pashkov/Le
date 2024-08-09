@@ -1,0 +1,28 @@
+{% extends "Accounting_button/base.html" %}
+{% load permissions %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Детали записи журнала расходов</h1>
+
+    <div><strong>ID записи:</strong> {{ journal.id }}</div>
+    <div><strong>Название:</strong> {{ journal.name }}</div>
+    <div><strong>Сумма:</strong> {{ journal.value }} руб.</div>
+    <div><strong>Дата события:</strong> {{ journal.date_of_event }}</div>
+    <div><strong>Дата записи:</strong> {{ journal.date }}</div>
+    {% if journal.comment %}
+    <div><strong>Комментарий:</strong> {{ journal.comment }}</div>
+    {% endif %}
+    <div><strong>Владелец записи:</strong> {{ journal.owner }}</div>
+    
+    <div class="mt-4">
+        {% if user|has_perm:"Accounting_button.change_expensejournal" %}
+            <a href="{% url 'Accounting_button:update_expense_journal' journal.id %}" class="btn btn-primary">Редактировать</a>
+        {% endif %}
+        {% if user|has_perm:"Accounting_button.delete_expensejournal" %}
+            <a href="{% url 'Accounting_button:delete_expense_journal' journal.id %}" class="btn btn-danger">Удалить</a>
+        {% endif %}
+        <a href="{% url 'Accounting_button:expense_journal_list' %}" class="btn btn-secondary">Вернуться к списку</a>
+    </div>
+</div>
+{% endblock %}

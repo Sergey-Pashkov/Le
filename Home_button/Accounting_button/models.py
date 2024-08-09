@@ -348,3 +348,39 @@ class IncomeJournal(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.client} - {self.value}"
+
+
+
+
+
+from django.db import models
+from django.contrib.auth.models import User
+from .models import TypesOfExpenses
+from django.utils import timezone
+from datetime import timedelta
+
+def previous_working_day():
+    today = timezone.now().date()
+    previous_day = today - timedelta(days=1)
+    while previous_day.weekday() > 4:  # Переход к предыдущему рабочему дню (понедельник=0, воскресенье=6)
+        previous_day -= timedelta(days=1)
+    return previous_day
+
+class ExpenseJournal(models.Model):
+    """
+    Модель для хранения записей журнала расходов.
+    """
+    name = models.ForeignKey(TypesOfExpenses, on_delete=models.PROTECT, related_name='expense_journals')  # Название расхода
+    value = models.DecimalField(max_digits=10, decimal_places=2)  # Сумма
+    date_of_event = models.DateField(default=previous_working_day)  # Дата события
+    date = models.DateTimeField(auto_now_add=True)  # Дата записи
+    comment = models.TextField(blank=True, null=True)  # Комментарий
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='expense_journals')  # Владелец
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['date_of_event']),  # Индекс для поля date_of_event
+        ]
+
+    def __str__(self):
+        return f"{self.name} - {self.value}"
