@@ -384,3 +384,32 @@ class ExpenseJournal(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.value}"
+
+
+
+from django.db import models
+from django.contrib.auth.models import User
+
+# Модель для хранения бюджетов по доходам
+class RevenueBudget(models.Model):
+    # Поле "name" связано с моделью "TypesOfIncome" и использует поведение "PROTECT"
+    name = models.ForeignKey('TypesOfIncome', on_delete=models.PROTECT)
+    
+    # Поле "value" для хранения положительного целого числа
+    value = models.PositiveIntegerField()
+    
+    # Поле "period" хранит месяц и год в формате 'YYYY-MM'
+    period = models.CharField(max_length=7, db_index=True)
+    
+    # Поле "date" автоматически сохраняет дату и время создания записи
+    date = models.DateTimeField(auto_now_add=True)
+    
+    # Поле "comment" для хранения дополнительной информации в виде текста
+    comment = models.TextField(blank=True, null=True)
+    
+    # Поле "owner" связано с моделью "User" и может принимать значение NULL
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='revenue_budgets')
+
+    # Метод __str__ определяет строковое представление объекта модели, возвращая имя и период
+    def __str__(self):
+        return f'{self.name} - {self.period}'

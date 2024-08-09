@@ -220,3 +220,14 @@ class ExpenseJournalAdmin(admin.ModelAdmin):
     list_display = ('name', 'value', 'date_of_event', 'date', 'owner')
     search_fields = ('name__name', 'owner__username')
     list_filter = ('date_of_event',)
+
+
+from django.contrib import admin
+from .models import RevenueBudget
+from .forms import RevenueBudgetForm
+
+@admin.register(RevenueBudget)
+class RevenueBudgetAdmin(admin.ModelAdmin):
+    form = RevenueBudgetForm
+    list_display = ('name', 'value', 'period', 'date', 'owner')
+    search_fields = ('name', 'comment')

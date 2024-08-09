@@ -261,3 +261,28 @@ class ExpenseJournalForm(forms.ModelForm):
             previous_day -= timedelta(days=1)
         
         return previous_day
+
+
+
+
+from django import forms
+from .models import RevenueBudget
+
+class RevenueBudgetForm(forms.ModelForm):
+    class Meta:
+        model = RevenueBudget
+        fields = ['name', 'value', 'period', 'comment']
+        widgets = {
+            'period': forms.DateInput(attrs={'type': 'month'}, format='%Y-%m'),
+        }
+
+    def clean_period(self):
+        period = self.cleaned_data.get('period')
+        # Если period уже строка (например, 'YYYY-MM'), просто возвращаем её
+        if isinstance(period, str):
+            return period
+        # Если период был передан как объект даты (должно быть очень редко),
+        # преобразуем его в строку 'YYYY-MM'
+        if period:
+            return period.strftime('%Y-%m')
+        return period
